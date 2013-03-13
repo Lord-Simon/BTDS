@@ -93,3 +93,9 @@ class Meta(models.Model):
     uuid = models.SlugField(max_length=36, unique=True, default=uuid4())
     def __unicode__(self):
         return self.bt_title
+
+class Images(models.Model):
+    volume = models.ForeignKey(Volume)
+    image = models.ImageField(upload_to = 'images')
+    cover = models.BooleanField(default=False)
+    info = models.TextField(blank=True)
