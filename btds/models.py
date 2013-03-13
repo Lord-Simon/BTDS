@@ -4,6 +4,12 @@ from uuid import uuid4
 
 # Create your models here.
 
+FILE_FORMATS = (
+    ('p','PDF'),
+    ('e','ePUB'),
+    ('m','MOBI'),
+)
+
 class Author(models.Model):
     name = models.CharField(max_length=255)
     def __unicode__(self):
@@ -16,13 +22,13 @@ class Illustrator(models.Model):
 
 class Translator(models.Model):
     name = models.CharField(max_length=255)
-    link = models.CharField(max_length=500)
+    link = models.URLField(max_length=500)
     def __unicode__(self):
         return self.name
 
 class Editor(models.Model):
     name = models.CharField(max_length=255)
-    link = models.CharField(max_length=500)
+    link = models.URLField(max_length=500)
     def __unicode__(self):
         return self.name
 
@@ -34,7 +40,7 @@ class Language(models.Model):
 
 class Publisher(models.Model):
     name = models.CharField(max_length = 255)
-    link = models.CharField(max_length=500)
+    link = models.URLField(max_length=500)
     def __unicode__(self):
         return self.name
 
@@ -64,12 +70,7 @@ class Volume(models.Model):
         return self.volume +':'+ str(self.number)
 
 class Link(models.Model):
-    link = models.CharField(max_length=500)
-    FILE_FORMATS = (
-        ('p','PDF'),
-        ('e','ePUB'),
-        ('m','MOBI'),
-    )
+    link = models.URLField(max_length=500)
     format = models.CharField(max_length=1, choices=FILE_FORMATS)
     user = models.ForeignKey(User)
     visible = models.BooleanField(default=False)
@@ -89,8 +90,6 @@ class Meta(models.Model):
     publisher = models.ForeignKey(Publisher)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-    def uuid_gen():
-        return uuid4()
-    uuid = models.SlugField(max_length=36, unique=True, default=uuid_gen)
+    uuid = models.SlugField(max_length=36, unique=True, default=uuid4())
     def __unicode__(self):
         return self.bt_title
