@@ -4,10 +4,12 @@ from django.conf import settings
 
 def index(request):
     
-    return render_to_response('btegen/index.html',{})
+    return render_to_response('btegen/index.html')
 
 def series(request, sid):
-    return render_to_response('btegen/series.html',{})
+    novel = get_object_or_404(Novel, id = sid)
+    return render_to_response('btegen/series.html',{'series':novel})
 
 def book(request, bid):
-    return render_to_response('btegen/book.html',{})
+    volume = get_object_or_404(Volume, id = bid)
+    return render_to_response('btegen/book.html',{'book':volume})
