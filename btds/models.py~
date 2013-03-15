@@ -71,7 +71,7 @@ class Volume(models.Model):
 
 class Link(models.Model):
     link = models.URLField(max_length=500)
-    file_format = models.CharField(max_length=1, choices=FILE_FORMATS)
+    format = models.CharField(max_length=1, choices=FILE_FORMATS)
     user = models.ForeignKey(User)
     visible = models.BooleanField(default=False)
     protected = models.BooleanField(default=False)
