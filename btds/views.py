@@ -3,13 +3,13 @@ from btds.models import *
 from django.conf import settings
 
 def index(request):
-    
-    return render_to_response('btegen/index.html')
+    novels = Novel.objects.all()
+    return render_to_response('btdst/index.html',{'novels':novels})
 
 def series(request, sid):
     novel = get_object_or_404(Novel, id = sid)
-    return render_to_response('btegen/series.html',{'series':novel})
+    return render_to_response('btdst/series.html',{'series':novel})
 
 def book(request, bid):
     volume = get_object_or_404(Volume, id = bid)
-    return render_to_response('btegen/book.html',{'book':volume})
+    return render_to_response('btdst/book.html',{'book':volume})

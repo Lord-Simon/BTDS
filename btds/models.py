@@ -22,13 +22,13 @@ class Illustrator(models.Model):
 
 class Translator(models.Model):
     name = models.CharField(max_length=255)
-    link = models.URLField(max_length=500)
+    link = models.URLField(max_length=500, blank=True)
     def __unicode__(self):
         return self.name
 
 class Editor(models.Model):
     name = models.CharField(max_length=255)
-    link = models.URLField(max_length=500)
+    link = models.URLField(max_length=500, blank=True)
     def __unicode__(self):
         return self.name
 
@@ -40,7 +40,7 @@ class Language(models.Model):
 
 class Publisher(models.Model):
     name = models.CharField(max_length = 255)
-    link = models.URLField(max_length=500)
+    link = models.URLField(max_length=500, blank=True)
     def __unicode__(self):
         return self.name
 
@@ -53,7 +53,9 @@ class Novel(models.Model):
     name = models.CharField(max_length=255, blank=False)
     illustrator = models.ForeignKey(Illustrator)
     author = models.ForeignKey(Author)
-    synopsis = models.TextField()
+    synopsis = models.TextField(blank=True)
+    def get_absolute_url(self):
+      return ('btds.views.series',(),{'sid':self.pk})
     def __unicode__(self):
         return self.name
 
@@ -63,11 +65,11 @@ class Volume(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     novel = models.ForeignKey(Novel)
-    synopsis = models.TextField()
+    synopsis = models.TextField(blank=True)
     isbn = models.CharField(max_length=17, blank=True)
     year = models.PositiveSmallIntegerField(max_length=4)
     def __unicode__(self):
-        return self.volume +':'+ str(self.number)
+        return self.novel.name +' - '+str(self.number) +' - '+ self.name
 
 class Link(models.Model):
     link = models.URLField(max_length=500)
@@ -83,18 +85,19 @@ class Link(models.Model):
 
 class Meta(models.Model):
     bt_title = models.CharField(max_length=255, blank=True)
-    link = models.ManyToManyField(Link)
-    translator = models.ManyToManyField(Translator)
-    editor = models.ManyToManyField(Editor)
-    genre = models.ManyToManyField(Genre)
-    publisher = models.ForeignKey(Publisher)
+    generate_epub = models.BooleanField(default=False)
+    link = models.ManyToManyField(Link, blank=True, null=True)
+    translator = models.ManyToManyField(Translator, blank=True, null=True)
+    editor = models.ManyToManyField(Editor, blank=True, null=True)
+    genre = models.ManyToManyField(Genre, blank=True, null=True)
+    publisher = models.ForeignKey(Publisher, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     uuid = models.SlugField(max_length=36, unique=True, default=uuid4())
     def __unicode__(self):
         return self.bt_title
 
-class Images(models.Model):
+class Image(models.Model):
     volume = models.ForeignKey(Volume)
     image = models.ImageField(upload_to = 'images')
     cover = models.BooleanField(default=False)

@@ -1,0 +1,13 @@
+{% extends 'btdst/body.html' %}
+{% block body %}
+<h1>Light Novel System Prototype</h1><br />
+{% if novels %}
+{% for novel in novels %}
+<li><a href="{{ novel.get_absolute_url }}" >{{ ln.name }}</a></li>
+<tr>
+    <td><a href="{{ novel.get_absolute_url }}">{{ novel.name }}</a></td>
+    <td>{{ novel.author }}</td>
+</tr>
+{% endfor %}
+{% endif %}
+{% endblock %}
