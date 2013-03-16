@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(name='BTDS',
     description='Multi-Lingual Novel Presentation Platform',
     author='Simon',
-    author_email='',
+    author_email='admin@m-chan.org',
     url='https://github.com/Lord-Simon/BTDS/',
     packages=['btds'],
     classifiers=[
