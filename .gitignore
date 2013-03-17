@@ -1,0 +1,21 @@
+*~
+*.py[cod]
+dist
+build
+eggs
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+__pycache__
+*.egg
+*.so
+*.egg-info
+bin
+var
+pip-log.txt
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
