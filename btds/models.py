@@ -68,6 +68,8 @@ class Volume(models.Model):
     synopsis = models.TextField(blank=True)
     isbn = models.CharField(max_length=17, blank=True)
     year = models.PositiveSmallIntegerField(max_length=4)
+    def get_absolute_url(self):
+      return ('btds.views.volume',(),{'bid':self.pk})
     def __unicode__(self):
         return self.novel.name +' - '+str(self.number) +' - '+ self.name
 

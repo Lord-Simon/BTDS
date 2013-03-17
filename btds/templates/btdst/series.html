@@ -1,19 +1,21 @@
 {% extends 'btdst/body.html' %}
 {% block body %}
 <div class="container-fluid">
-{% if novels %}
+{% if series %}
 	<table class="table" data-provides="rowlink">
 		<thead>
 			<tr>
 				<th>Series</th>
-				<th>Author</th>
-			</tr>
+				<th>Volume</th>
+				<th>Name</th>
+            </tr>
 		</thead>
 		<tbody>
-{% for novel in novels %}
+{% for ser in series %}
 			<tr>
-				<td><a href="{{ novel.get_absolute_url }}">{{ novel.name }}</a></td>
-				<td>{{ novel.author }}</td>
+				<td><a href="{{ ser.get_absolute_url }}">{{ ser.novel.name }}</a></td>
+				<td>{{ ser.number }}</td>
+				<td>{{ ser.name }}</td>
 			</tr>
 {% endfor %}
 		</tbody>

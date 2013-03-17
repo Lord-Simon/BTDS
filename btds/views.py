@@ -8,8 +8,9 @@ def index(request):
 
 def series(request, sid):
     novel = get_object_or_404(Novel, id = sid)
-    return render_to_response('btdst/series.html',{'series':novel})
+    series = novel.volume_set.all()
+    return render_to_response('btdst/series.html',{'series':series})
 
-def book(request, bid):
-    volume = get_object_or_404(Volume, id = bid)
-    return render_to_response('btdst/book.html',{'book':volume})
+def volume(request, vid):
+    volume = get_object_or_404(Volume, id = vid)
+    return render_to_response('btdst/volume.html',{'volume':volume})
