@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 
-urlpatterns = patterns("btds",
-    url(r'^$', 'views.index', name='index'),
-    url(r'^(?P<sid>\d+)/$', 'views.series', name='series'),
-    url(r'^\d+/(?P<vid>\d+)/$', 'views.volume', name='volume'),
+urlpatterns = patterns("btds.views",
+    url(r'^$', 'index', name='index'),
+    url(r'^(?P<sid>\d+)/$', 'series', name='series'),
+    url(r'^(?P<vid>\d+)/$', 'volume', name='volume'),
 )
