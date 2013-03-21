@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from uuid import uuid4
 
 # Create your models here.
@@ -8,6 +9,12 @@ FILE_FORMATS = (
     ('p','PDF'),
     ('e','ePUB'),
     ('m','MOBI'),
+)
+
+PUBLISHER_TYPE = (
+    ('m','MediaWiki'),
+    ('w','WordPress'),
+    ('b','BlogSpot'),
 )
 
 class Author(models.Model):
@@ -22,13 +29,13 @@ class Illustrator(models.Model):
 
 class Translator(models.Model):
     name = models.CharField(max_length=255)
-    link = models.URLField(max_length=500, blank=True)
+    link = models.URLField(max_length=500, blank=True, null=True)
     def __unicode__(self):
         return self.name
 
 class Editor(models.Model):
     name = models.CharField(max_length=255)
-    link = models.URLField(max_length=500, blank=True)
+    link = models.URLField(max_length=500, blank=True, null=True)
     def __unicode__(self):
         return self.name
 
@@ -40,7 +47,8 @@ class Language(models.Model):
 
 class Publisher(models.Model):
     name = models.CharField(max_length = 255)
-    link = models.URLField(max_length=500, blank=True)
+    publisher_type = models.CharField(max_length=1, choices=PUBLISHER_TYPE)
+    link = models.URLField(max_length=500, blank=True, null=True)
     def __unicode__(self):
         return self.name
 
@@ -51,11 +59,12 @@ class Genre(models.Model):
 
 class Novel(models.Model):
     name = models.CharField(max_length=255, blank=False)
+    genre = models.ManyToManyField(Genre, blank=True, null=True)
     illustrator = models.ForeignKey(Illustrator)
     author = models.ForeignKey(Author)
     synopsis = models.TextField(blank=True)
     def get_absolute_url(self):
-      return ('btds.views.series',(),{'sid':self.pk})
+      return reverse('btds.views.series',None,[str(self.id)])
     def __unicode__(self):
         return self.name
 
@@ -69,11 +78,29 @@ class Volume(models.Model):
     isbn = models.CharField(max_length=17, blank=True)
     year = models.PositiveSmallIntegerField(max_length=4)
     def get_absolute_url(self):
-      return ('btds.views.volume',(),{'bid':self.pk})
+      return reverse('btds.views.volume',None,[str(self.id)])
     def __unicode__(self):
-        return self.novel.name +' - '+str(self.number) +' - '+ self.name
+        return self.novel.name +' - '+ str(self.number) +' - '+ self.name
+
+class Meta(models.Model):
+    volume = models.ForeignKey(Volume)
+    language = models.ForeignKey(Language)
+    publisher = models.ForeignKey(Publisher, blank=True, null=True)
+    url = models.URLField(max_length=500, blank=True, null=True)
+    translator = models.ManyToManyField(Translator, blank=True, null=True)
+    editor = models.ManyToManyField(Editor, blank=True, null=True)
+    epubgen = models.BooleanField(default=False)
+    pdfgen = models.BooleanField(default=False)
+    mobigen = models.BooleanField(default=False)
+    uuid = models.SlugField(max_length=36, unique=True, default=uuid4())
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    def __unicode__(self):
+        return self.publisher.name + ' - ' + self.volume.novel.name
 
 class Link(models.Model):
+    meta = models.ForeignKey(Meta)
+    language = models.ForeignKey(Language)
     link = models.URLField(max_length=500)
     file_format = models.CharField(max_length=1, choices=FILE_FORMATS)
     user = models.ForeignKey(User)
@@ -85,22 +112,10 @@ class Link(models.Model):
     def __unicode__(self):
         return self.link
 
-class Meta(models.Model):
-    bt_title = models.CharField(max_length=255, blank=True)
-    generate_epub = models.BooleanField(default=False)
-    link = models.ManyToManyField(Link, blank=True, null=True)
-    translator = models.ManyToManyField(Translator, blank=True, null=True)
-    editor = models.ManyToManyField(Editor, blank=True, null=True)
-    genre = models.ManyToManyField(Genre, blank=True, null=True)
-    publisher = models.ForeignKey(Publisher, blank=True, null=True)
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    uuid = models.SlugField(max_length=36, unique=True, default=uuid4())
-    def __unicode__(self):
-        return self.bt_title
-
 class Image(models.Model):
     volume = models.ForeignKey(Volume)
     image = models.ImageField(upload_to = 'images')
     cover = models.BooleanField(default=False)
     info = models.TextField(blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
