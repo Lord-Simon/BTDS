@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from uuid import uuid4
+import itertools
 
 # Create your models here.
 
@@ -78,7 +79,15 @@ class Volume(models.Model):
     isbn = models.CharField(max_length=17, blank=True)
     year = models.PositiveSmallIntegerField(max_length=4)
     def get_absolute_url(self):
-      return reverse('btds.views.volume',None,[str(self.id)])
+        return reverse('btds.views.volume',None,[str(self.id)])
+    def get_translator(self):
+        return sorted(set([x for t in [m.translator.all() for m in self.meta_set.all()] for x in t]))
+    def get_editor(self):
+        return sorted(set([x for t in [m.editor.all() for m in self.meta_set.all()] for x in t]))
+    def get_publisher(self):
+        return [m.publisher for m in self.meta_set.all()]
+    def get_link(self):
+        return list(itertools.chain.from_iterable([m.link_set.all() for m in self.meta_set.all()]))
     def __unicode__(self):
         return self.novel.name +' - '+ str(self.number) +' - '+ self.name
 
@@ -87,6 +96,7 @@ class Meta(models.Model):
     language = models.ForeignKey(Language)
     publisher = models.ForeignKey(Publisher, blank=True, null=True)
     url = models.URLField(max_length=500, blank=True, null=True)
+    chapter_url = models.TextField(blank=True, null=True)
     translator = models.ManyToManyField(Translator, blank=True, null=True)
     editor = models.ManyToManyField(Editor, blank=True, null=True)
     epubgen = models.BooleanField(default=False)
@@ -96,7 +106,7 @@ class Meta(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     def __unicode__(self):
-        return self.publisher.name + ' - ' + self.volume.novel.name
+        return self.publisher.name + ' - ' + self.volume.novel.name + ' - ' + str(self.volume.number) + ' - ' + self.volume.name
 
 class Link(models.Model):
     meta = models.ForeignKey(Meta)
