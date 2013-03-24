@@ -16,6 +16,7 @@ class LanguageAdmin(admin.ModelAdmin):
 class NovelAdmin(admin.ModelAdmin):
     list_display = ('name', 'author', 'illustrator')
     search_fields = ['name', 'author__name', 'illustrator__name']
+    list_filter = ('genre__name',)
 
 class VolumeAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'novel', 'year', 'isbn')
@@ -28,9 +29,9 @@ class LinkAdmin(admin.ModelAdmin):
     list_filter = ('visible', 'protected', 'closed')
 
 class MetaAdmin(admin.ModelAdmin):
-    list_display = ('bt_title', 'uuid')
-    search_fields = ['bt_title', 'editor__name', 'translator__name']
-    list_filter = ('genre__name', 'modified')
+    list_display = ('publisher', 'volume', 'uuid', 'url')
+    search_fields = ['url', 'editor__name', 'translator__name']
+    list_filter = ('language__name', 'modified')
 
 admin.site.register(Author, NameOnlyAdmin)
 admin.site.register(Illustrator, NameOnlyAdmin)
@@ -44,3 +45,4 @@ admin.site.register(Volume, VolumeAdmin)
 admin.site.register(Link, LinkAdmin)
 admin.site.register(Meta, MetaAdmin)
 admin.site.register(Image)
+admin.site.register(Format)
