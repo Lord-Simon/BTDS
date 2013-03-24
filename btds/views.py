@@ -14,3 +14,7 @@ def series(request, sid):
 def volume(request, vid):
     volume = get_object_or_404(Volume, id = vid)
     return render_to_response('btdst/volume.html',{'volume':volume})
+
+def updates(request):
+    volumes = Volume.objects.order_by('-id')[:25]
+    return render_to_response('btdst/updates.html',{'volumes':volumes})

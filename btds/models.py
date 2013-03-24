@@ -3,14 +3,9 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from uuid import uuid4
 import itertools
+import os
 
 # Create your models here.
-
-FILE_FORMATS = (
-    ('p','PDF'),
-    ('e','ePUB'),
-    ('m','MOBI'),
-)
 
 PUBLISHER_TYPE = (
     ('m','MediaWiki'),
@@ -58,6 +53,11 @@ class Genre(models.Model):
     def __unicode__(self):
         return self.name
 
+class Format(models.Model):
+    name = models.CharField(max_length = 5)
+    def __unicode__(self):
+        return self.name
+
 class Novel(models.Model):
     name = models.CharField(max_length=255, blank=False)
     genre = models.ManyToManyField(Genre, blank=True, null=True)
@@ -88,6 +88,12 @@ class Volume(models.Model):
         return [m.publisher for m in self.meta_set.all()]
     def get_link(self):
         return list(itertools.chain.from_iterable([m.link_set.all() for m in self.meta_set.all()]))
+    def get_cover(self):
+        return self.image_set.all()[1:].get().image
+    def get_genre(self):
+        return self.novel.genre.all()
+    def get_link_language(self):
+        return sorted(set([x.language for l in [m.link_set.filter(visible = True, closed = False) for m in self.meta_set.all()] for x in l]))
     def __unicode__(self):
         return self.novel.name +' - '+ str(self.number) +' - '+ self.name
 
@@ -112,7 +118,7 @@ class Link(models.Model):
     meta = models.ForeignKey(Meta)
     language = models.ForeignKey(Language)
     link = models.URLField(max_length=500)
-    file_format = models.CharField(max_length=1, choices=FILE_FORMATS)
+    file_format = models.ForeignKey(Format)
     user = models.ForeignKey(User)
     visible = models.BooleanField(default=False)
     protected = models.BooleanField(default=False)
@@ -124,7 +130,9 @@ class Link(models.Model):
 
 class Image(models.Model):
     volume = models.ForeignKey(Volume)
-    image = models.ImageField(upload_to = 'images')
+    def upload_to_path(instance, filename):
+            return 'btds/images/%s/%s' % (instance.volume.id, filename)
+    image = models.ImageField(upload_to = upload_to_path)
     cover = models.BooleanField(default=False)
     info = models.TextField(blank=True)
     created = models.DateTimeField(auto_now_add=True)
