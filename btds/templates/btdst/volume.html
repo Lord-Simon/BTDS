@@ -9,7 +9,7 @@
 {% if volume.get_cover %}
 <img src="/media/{{ volume.get_cover }}" class="span4 pull-right">
 {% endif %}
-<h1>Information</h1>
+<h1>Information{% if user.is_authenticated %}&nbsp;&nbsp;<a href="edit/" class="btn btn-inverse"><i class="icon-edit icon-white"></i> <b>Edit</b></a>{% endif %}</h1>
 <p><strong>Series:</strong> <a href="{{ volume.novel.get_absolute_url }}">{{ volume.novel.name }}</a></p>
 {% if volume.name %}
 <p><strong>Title:</strong> {{ volume.name }}</p>
@@ -42,12 +42,14 @@
 <div class="btn-group" data-toggle="buttons-radio">
 {% for lang in volume.get_link_language %}<button type="button" class="btn" id="{{ lang.iso }}">{{ lang.name }}</button>{% endfor %}
 </div>
+<br />
+<br />
 <div id="links">
 {% for lang in volume.get_link_language %}
 <div id="{{ lang.iso }}">
 <ul>
 {% for link in volume.get_link %}
-{% if link.language.iso == lang.iso %}<li><a href="{{ link.link }}">{{ link.file_format }}</a> by {{ link.user }}</li>{% endif %}
+{% if link.language.iso == lang.iso %}<li><a href="{{ link.link }}" class="btn"><b>{{ link.file_format }}</b> by {{ link.user }}</a></li>{% endif %}
 {% endfor %}
 </ul>
 </div>

@@ -45,7 +45,9 @@
                                 <a href="{% url btds_index %}feedl/"><i class="icon-exclamation-sign icon-white"></i> Links Feed</a>
                             </li>
 							{% if user.is_authenticated %}
-							
+							<li>
+                                <a href="{% url logout %}">Logout</a>
+                            </li>
 							{% else %}
                             <li>
                                 <a href="#login" role="button" data-toggle="modal">Login</a>
@@ -72,21 +74,22 @@
                 <h3 id="myModalLabel">Login</h3>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="/admin/login.php" method="post">
+                <form class="form-horizontal" action="{% url login %}" method="post">{% csrf_token %}
                     <div class="control-group">
                         <label class="control-label" for="inputEmail">User</label>
                         <div class="controls">
-                            <input type="text" id="inputUser" placeholder="User" name="benutzer" required="required">
+                            <input type="text" id="inputUser" placeholder="Username" name="username" required="required">
                         </div>
                     </div>
                     <div class="control-group">
                         <label class="control-label" for="inputPassword">Password</label>
                         <div class="controls">
-                            <input type="password" id="inputPassword" placeholder="Password" name="passwort" required="required">
+                            <input type="password" id="inputPassword" placeholder="Password" name="password" required="required">
                         </div>
                     </div>
                     <div class="control-group">
                         <div class="controls">
+							<input type="hidden" name="next" value="{% url btds_index %}" />
                             <button type="submit" class="btn" name="login" >Login</button>
                         </div>
                     </div>
@@ -102,7 +105,7 @@
                 <h3 id="myModalLabel">Sign Up</h3>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="login.php" method="post">
+                <form class="form-horizontal" action="" method="post">
                     <div class="control-group">
                         <label class="control-label" for="inputUser">User</label>
                         <div class="controls">
