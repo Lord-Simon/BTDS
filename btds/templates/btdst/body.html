@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -54,6 +54,34 @@
                             </li>
 							{% endif %}
                         </ul>
+						{% if user.is_authenticated %}
+						<ul class="nav pull-right">
+                            <li>
+                                <a href="{% url btds_ucp %}">User Page</a>
+                            </li>
+							<li class="dropdown">
+								<a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-plus icon-white"></i> Add</a>
+								<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+									<li><a href="#addNovel" role="button" data-toggle="modal">Novel</a></li>
+									<li><a href="#addVolume" role="button" data-toggle="modal">Volume</a></li>
+									<li><a href="#addMeta" role="button" data-toggle="modal">Meta</a></li>
+									<li class="divider"></li>
+									<li><a href="#addAuthor" role="button" data-toggle="modal">Author</a></li>
+									<li><a href="#addIllustrator" role="button" data-toggle="modal">Illustrator</a></li>
+									<li><a href="#addTranslator" role="button" data-toggle="modal">Translator</a></li>
+									<li><a href="#addEditor" role="button" data-toggle="modal">Editor</a></li>
+									<li class="divider"></li>
+									<li><a href="#addLanguage" role="button" data-toggle="modal">Language</a></li>
+									<li><a href="#addPublisher" role="button" data-toggle="modal">Publisher</a></li>
+									<li><a href="#addGenre" role="button" data-toggle="modal">Genre</a></li>
+									<li><a href="#addFormat" role="button" data-toggle="modal">Format</a></li>
+									<li class="divider"></li>
+									<li><a href="#addLink" role="button" data-toggle="modal">Link</a></li>
+									<li><a href="#addImage" role="button" data-toggle="modal">Image</a></li>
+								</ul>
+                            </li>
+						</ul>
+						{% endif %}
                     </div><!--/.nav-collapse -->
                 </div>
             </div>
@@ -62,7 +90,343 @@
 
 		{% if user.is_authenticated %}
 		
+		<!-- addMeta Part -->
+
+        <div id="addMeta" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">Add Meta</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                    {% for field in MAF %}
+					<div class="control-group">
+                        <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                        <div class="controls">
+							{{ field.errors }}
+							{{ field }}
+                        </div>
+                    </div>
+					{% endfor %}
+					<div class="modal-footer">
+						<input type="hidden" name="next" value="{% url btds_index %}" />
+                        <button type="submit" class="btn btn-block btn-success" name="addMeta" >Add Meta</button>
+					</div>
+                </form>
+            </div>
+		</div>
+			
+			<!-- addAuthor Part -->
+
+        <div id="addAuthor" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">Add Author</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                    {% for field in AAF %}
+					<div class="control-group">
+                        <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                        <div class="controls">
+							{{ field.errors }}
+							{{ field }}
+                        </div>
+                    </div>
+					{% endfor %}
+					<div class="modal-footer">
+						<input type="hidden" name="next" value="{% url btds_index %}" />
+                        <button type="submit" class="btn btn-block btn-success" name="addAuthor" >Add Author</button>
+					</div>
+                </form>
+            </div>
+		</div>
 		
+			<!-- addIllustrator Part -->
+
+        <div id="addIllustrator" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">Add Illustrator</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                    {% for field in IAF %}
+					<div class="control-group">
+                        <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                        <div class="controls">
+							{{ field.errors }}
+							{{ field }}
+                        </div>
+                    </div>
+					{% endfor %}
+					<div class="modal-footer">
+						<input type="hidden" name="next" value="{% url btds_index %}" />
+                        <button type="submit" class="btn btn-block btn-success" name="addIllustrator" >Add Illustrator</button>
+					</div>
+                </form>
+            </div>
+		</div>
+		
+			<!-- addTranslator Part -->
+
+        <div id="addTranslator" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">Add Translator</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                    {% for field in TAF %}
+					<div class="control-group">
+                        <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                        <div class="controls">
+							{{ field.errors }}
+							{{ field }}
+                        </div>
+                    </div>
+					{% endfor %}
+					<div class="modal-footer">
+						<input type="hidden" name="next" value="{% url btds_index %}" />
+                        <button type="submit" class="btn btn-block btn-success" name="addTranslator" >Add Translator</button>
+					</div>
+                </form>
+            </div>
+		</div>
+		
+			<!-- addEditor Part -->
+
+        <div id="addEditor" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">Add Editor</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                    {% for field in EAF %}
+					<div class="control-group">
+                        <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                        <div class="controls">
+							{{ field.errors }}
+							{{ field }}
+                        </div>
+                    </div>
+					{% endfor %}
+					<div class="modal-footer">
+						<input type="hidden" name="next" value="{% url btds_index %}" />
+                        <button type="submit" class="btn btn-block btn-success" name="addEditor" >Add Editor</button>
+					</div>
+                </form>
+            </div>
+		</div>
+		
+			<!-- addLanguage Part -->
+
+        <div id="addLanguage" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">Add Language <a href="http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes">ISO 639-1</a></h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                    {% for field in LANGAF %}
+					<div class="control-group">
+                        <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                        <div class="controls">
+							{{ field.errors }}
+							{{ field }}
+                        </div>
+                    </div>
+					{% endfor %}
+					<div class="modal-footer">
+						<input type="hidden" name="next" value="{% url btds_index %}" />
+                        <button type="submit" class="btn btn-block btn-success" name="addLanguage" >Add Language</button>
+					</div>
+                </form>
+            </div>
+		</div>
+		
+			<!-- addPublisher Part -->
+
+        <div id="addPublisher" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">Add Publisher</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                    {% for field in PAF %}
+					<div class="control-group">
+                        <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                        <div class="controls">
+							{{ field.errors }}
+							{{ field }}
+                        </div>
+                    </div>
+					{% endfor %}
+					<div class="modal-footer">
+						<input type="hidden" name="next" value="{% url btds_index %}" />
+                        <button type="submit" class="btn btn-block btn-success" name="addPublisher" >Add Publisher</button>
+					</div>
+                </form>
+            </div>
+		</div>
+		
+			<!-- addGenre Part -->
+
+        <div id="addGenre" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">Add Genre</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                    {% for field in GAF %}
+					<div class="control-group">
+                        <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                        <div class="controls">
+							{{ field.errors }}
+							{{ field }}
+                        </div>
+                    </div>
+					{% endfor %}
+					<div class="modal-footer">
+						<input type="hidden" name="next" value="{% url btds_index %}" />
+                        <button type="submit" class="btn btn-block btn-success" name="addGenre" >Add Genre</button>
+					</div>
+                </form>
+            </div>
+		</div>
+		
+			<!-- addFormat Part -->
+
+        <div id="addFormat" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">Add Format</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                    {% for field in FAF %}
+					<div class="control-group">
+                        <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                        <div class="controls">
+							{{ field.errors }}
+							{{ field }}
+                        </div>
+                    </div>
+					{% endfor %}
+					<div class="modal-footer">
+						<input type="hidden" name="next" value="{% url btds_index %}" />
+                        <button type="submit" class="btn btn-block btn-success" name="addFormat" >Add Format</button>
+					</div>
+                </form>
+            </div>
+		</div>
+		
+			<!-- addImage Part -->
+
+        <div id="addImage" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">Add Image</h3>
+            </div>
+            <div class="modal-body">
+                <form enctype="multipart/form-data" class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                    {% for field in IMGAF %}
+					<div class="control-group">
+                        <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                        <div class="controls">
+							{{ field.errors }}
+							{{ field }}
+                        </div>
+                    </div>
+					{% endfor %}
+					<div class="modal-footer">
+						<input type="hidden" name="next" value="{% url btds_index %}" />
+                        <button type="submit" class="btn btn-block btn-success" name="addImage" >Add Image</button>
+					</div>
+                </form>
+            </div>
+		</div>
+		
+		<!-- AddNovel Part -->
+
+        <div id="addNovel" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">Add Novel</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                    {% for field in NAF %}
+					<div class="control-group">
+                        <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                        <div class="controls">
+							{{ field.errors }}
+							{{ field }}
+                        </div>
+                    </div>
+					{% endfor %}
+					<div class="modal-footer">
+						<input type="hidden" name="next" value="{% url btds_index %}" />
+                        <button type="submit" class="btn btn-block btn-success" name="addNovel" >Add Novel</button>
+					</div>
+                </form>
+            </div>
+        </div>
+		
+		<!-- AddVolume Part -->
+
+        <div id="addVolume" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">Add Volume</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                    {% for field in VAF %}
+					<div class="control-group">
+                        <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                        <div class="controls">
+							{{ field.errors }}
+							{{ field }}
+                        </div>
+                    </div>
+					{% endfor %}
+                    <div class="modal-footer">
+						<input type="hidden" name="next" value="{% url btds_index %}" />
+                        <button type="submit" class="btn btn-block btn-success" name="addVolume" >Add Volume</button>
+					</div>
+                </form>
+            </div>
+        </div>
+		
+		<!-- AddLink Part -->
+
+        <div id="addLink" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="myModalLabel">Add Link</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+				{% for field in LAF %}
+					<div class="control-group">
+                        <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                        <div class="controls">
+							{{ field.errors }}
+							{{ field }}
+                        </div>
+                    </div>
+				{% endfor %}
+                    <div class="modal-footer">
+						<input type="hidden" name="next" value="{% url btds_index %}" />
+                        <button type="submit" class="btn btn-block btn-success" name="addLink" >Add Link</button>
+					</div>
+                </form>
+            </div>
+        </div>
 		
 		{% else %}
 		
@@ -70,13 +434,13 @@
 
         <div id="login" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">?</button>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h3 id="myModalLabel">Login</h3>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" action="{% url login %}" method="post">{% csrf_token %}
                     <div class="control-group">
-                        <label class="control-label" for="inputEmail">User</label>
+                        <label class="control-label" for="inputUser">User</label>
                         <div class="controls">
                             <input type="text" id="inputUser" placeholder="Username" name="username" required="required">
                         </div>
@@ -101,7 +465,7 @@
 
         <div id="register" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h3 id="myModalLabel">Sign Up</h3>
             </div>
             <div class="modal-body">
@@ -143,7 +507,7 @@
 
         <div id="restore" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h3 id="myModalLabel">Sign Up</h3>
             </div>
             <div class="modal-body">
@@ -162,12 +526,10 @@
                 </form>
             </div>
         </div>
-		
 		{% endif %}
 		
         <script src="http://code.jquery.com/jquery-latest.js" ></script>
         <script src="{% static 'btds/js/bootstrap.min.js' %}"></script>
-        <script src="{% static 'btds/js/bootstrap-rowlink.min.js' %}"></script>
 		{% block js %}{% endblock %}
     </body>
 </html>

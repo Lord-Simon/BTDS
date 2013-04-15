@@ -89,7 +89,7 @@ class Volume(models.Model):
     def get_link(self):
         return list(itertools.chain.from_iterable([m.link_set.all() for m in self.meta_set.all()]))
     def get_cover(self):
-        return self.image_set.all()[1:].get().image
+        return self.image_set.all()[:1].get().image
     def get_genre(self):
         return self.novel.genre.all()
     def get_link_language(self):

@@ -1,0 +1,34 @@
+{% extends 'btdst/body.html' %}
+{% block body %}
+<div class="container-fluid">
+{% if links %}
+    <table class="table" data-provides="rowlink">
+        <thead>
+            <tr>
+                <th>Meta</th>
+                <th>Format</th>
+                <th>Language</th>
+                <th>Link</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+{% for link in links %}
+            <tr>
+                <td>{{ link.meta }}</td>
+                <td>{{ link.file_format }}</td>
+                <td>{{ link.language }}</td>
+                <td>{{ link.link }}</td>
+                <td>
+                <form action="{% url btds_close %}" method="post">{% csrf_token %}
+                    <input type="hidden" name="id_link" value="{{ link.id }}" />
+                    <button type="submit" class="btn btn-danger btn-block" name="closeLink" >Delete</button>
+                </form>
+                <a class="btn btn-warning btn-block" href="">Edit</a></td>
+            </tr>
+{% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+</div>
+{% endblock %}
