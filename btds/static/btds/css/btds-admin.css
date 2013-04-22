@@ -1,0 +1,5 @@
+#aut td:hover { background-color: #CFCFCF; }
+#aut a:link {color:black;}      /* unvisited link */
+#aut a:visited {color:black;}  /* visited link */
+#aut a:hover {color:black;}  /* mouse over link */
+#aut a:active {color:black;}  /* selected link */ 

@@ -71,7 +71,7 @@ class Novel(models.Model):
 
 class Volume(models.Model):
     name = models.CharField(max_length=255, blank=True)
-    number = models.PositiveIntegerField()
+    number = models.PositiveIntegerField(blank=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     novel = models.ForeignKey(Novel)
@@ -89,7 +89,9 @@ class Volume(models.Model):
     def get_link(self):
         return list(itertools.chain.from_iterable([m.link_set.all() for m in self.meta_set.all()]))
     def get_cover(self):
-        return self.image_set.all()[:1].get().image
+        return self.image_set.filter(cover=True)[:1].get().image
+    def get_images(self):
+        return self.image_set.all().order_by('image')
     def get_genre(self):
         return self.novel.genre.all()
     def get_link_language(self):
@@ -127,6 +129,7 @@ class Link(models.Model):
     modified = models.DateTimeField(auto_now=True)
     def __unicode__(self):
         return self.link
+        
 
 class Image(models.Model):
     volume = models.ForeignKey(Volume)
@@ -137,3 +140,5 @@ class Image(models.Model):
     info = models.TextField(blank=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
+    def filename(self):
+        return str(self.image).split("/")[-1]

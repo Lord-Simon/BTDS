@@ -11,7 +11,7 @@
 		</thead>
 		<tbody>
 {% for novel in novels %}
-			<tr>
+			<tr{% if novel.volume_set.all.count <= 0 %} class="btn-danger"{% endif %}>
 				<td><a href="{{ novel.get_absolute_url }}">{{ novel.name }}</a></td>
 				<td>{{ novel.author }}</td>
 			</tr>

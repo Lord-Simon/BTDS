@@ -6,6 +6,10 @@ class VolumeEditForm(ModelForm):
     class Meta: 
         model = Volume
         exclude = ('modified','created','novel')
+        
+class NovelEditForm(ModelForm):        
+    class Meta: 
+        model = Novel
 
 class AuthorAddForm(ModelForm):        
     class Meta: 

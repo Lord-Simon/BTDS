@@ -1,0 +1,27 @@
+{% extends 'btdst/body.html' %}
+{% block body %}
+{% if metas %}
+<div class="container">
+<form class="form-horizontal" action="{% url btds_edit %}" method="post">{% csrf_token %}
+                    {% for field in VEF %}
+					<div class="control-group">
+                        <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                        <div class="controls">
+							{{ field.errors }}
+							{{ field }}
+                        </div>
+                    </div>
+					{% endfor %}
+					<div class="modal-footer">
+						<input type="hidden" name="next" value="{% url btds_index %}" />
+                        <button type="submit" class="btn btn-block btn-success" name="editVolume" >Accept</button>
+					</div>
+                </form>
+{% for meta in metas %}
+<div>
+<a href="{{ meta.publisher.id }}" class="btn btn-info btn-large" style="vertical-align: middle;">{{ meta.publisher }}</a>
+</div>
+{% endfor %}
+</div>
+{% endif %}
+{% endblock %}

@@ -32,7 +32,7 @@ class LinkFeed(Feed):
         return item.meta.volume.novel.name + " - " + str(item.meta.volume.number) + " - " + item.meta.volume.name
 
     def item_description(self, item):
-        return "<a href=" + str(item.link) +">" + str(item.file_format) + "</a>"
+        return "<a href=" + str(item.link) +">" + str(item.file_format) + " by " + str(item.user) + "</a>"
 
     # item_link is only needed if NewsItem has no get_absolute_url method.
     def item_link(self, item):

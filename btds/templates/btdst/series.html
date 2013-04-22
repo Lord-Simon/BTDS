@@ -1,6 +1,7 @@
 {% extends 'btdst/body.html' %}
 {% block body %}
 <div class="container-fluid">
+{% if user.is_authenticated %}<a href="#editNovel" role="button" data-toggle="modal" class="btn btn-block btn-inverse"><i class="icon-edit icon-white"></i> <b>Edit</b></a>{% endif %}
 {% if series %}
 	<table class="table" data-provides="rowlink">
 		<thead>
@@ -21,7 +22,67 @@
 		</tbody>
 	</table>
 {% endif %}
+{% if user.is_authenticated %}<a href="#addNovelVolume" role="button" data-toggle="modal" class="btn btn-block btn-success"><i class="icon-plus icon-white"></i> <b>Add Volume</b></a>{% endif %}
 </div>
+{% if user.is_authenticated %}
+<!-- editNovel Part -->
+
+<div id="editNovel" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3 id="myModalLabel">Edit Novel</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" action="{% url btds_edit %}" method="post">{% csrf_token %}
+            {% for field in NEF %}
+            <div class="control-group">
+                <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                <div class="controls">
+                    {{ field.errors }}
+                    {{ field }}
+                </div>
+            </div>
+            {% endfor %}
+            <div class="modal-footer">
+                <input type="hidden" name="next" value="{% url btds_index %}" />
+                <input type="hidden" name="id_novel" value="{{ NID }}" />
+                <button type="submit" class="btn btn-block btn-success" name="editNovel" >Accept Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="addNovelVolume" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3 id="myModalLabel">Add Meta</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+            {% for field in VAF %}
+            <div class="control-group">
+                <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                <div class="controls">
+                {% if field.name == "novel" %}
+                    <select id="id_novel" name="novel">
+                        <option selected="selected" value="{{ novel.id }}">{{ novel }}</option>
+                    </select>
+                {% else %}
+                    {{ field.errors }}
+                    {{ field }}
+                {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            <div class="modal-footer">
+                <input type="hidden" name="next" value="{% url btds_index %}" />
+                <button type="submit" class="btn btn-block btn-success" name="addVolume" >Add Volume</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endif %}
 {% endblock %}
 {% block js %}
 {% load staticfiles %}

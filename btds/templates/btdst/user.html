@@ -6,6 +6,7 @@
         <thead>
             <tr>
                 <th>Meta</th>
+                <th>Active</th>
                 <th>Format</th>
                 <th>Language</th>
                 <th>Link</th>
@@ -16,6 +17,7 @@
 {% for link in links %}
             <tr>
                 <td>{{ link.meta }}</td>
+                <td>{% if link.visible %}<i class="icon-ok"></i>{% else %}<i class="icon-remove"></i>{% endif %}</td>
                 <td>{{ link.file_format }}</td>
                 <td>{{ link.language }}</td>
                 <td>{{ link.link }}</td>
@@ -24,7 +26,7 @@
                     <input type="hidden" name="id_link" value="{{ link.id }}" />
                     <button type="submit" class="btn btn-danger btn-block" name="closeLink" >Delete</button>
                 </form>
-                <a class="btn btn-warning btn-block" href="">Edit</a></td>
+                <a class="btn btn-warning btn-block" href="{{ link.id }}">Edit</a></td>
             </tr>
 {% endfor %}
         </tbody>
