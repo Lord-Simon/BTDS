@@ -1,11 +1,14 @@
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
+from django.core import serializers
 from btds.models import *
 from btds.forms import *
 from django.conf import settings
 from django.template import RequestContext
 
+def api(request):
+    return HttpResponse(serializers.serialize("json", Novel.objects.all()))
 def index(request):
     if request.user.is_authenticated():
         novels = Novel.objects.all().order_by('name')
@@ -15,10 +18,11 @@ def index(request):
 
 def series(request, sid):
     novel = get_object_or_404(Novel, id = sid)
-    series = novel.volume_set.all().order_by('number', 'id')
     if request.user.is_authenticated():
+        series = novel.volume_set.all().order_by('number', 'id')
         nef = NovelEditForm(instance=novel)
         return render_to_response('btdst/series.html',{'series':series, 'NEF':nef, 'NID': sid, 'novel':novel}, context_instance=RequestContext(request))
+    series = novel.volume_set.filter(pk__in=Meta.objects.all().values('volume')).order_by('number', 'id')
     return render_to_response('btdst/series.html',{'series':series}, context_instance=RequestContext(request))
 
 def volume(request, vid):
@@ -95,6 +99,10 @@ def acp_user_closed(request, uid):
         
 
 def edit(request):
+    if 'linkDownloadCount' in request.POST:
+        link = get_object_or_404(Link, closed=False, id = request.POST.get("id_link", ""))
+        link.incr_dlcount()
+        return HttpResponse()
     if request.user.is_authenticated() and (request.user.groups.filter(name='Admin') or request.user.is_superuser):
         if 'acceptLink' in request.POST:
             link = Link.objects.get(id = request.POST.get("id_link", ""))

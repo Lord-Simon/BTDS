@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(function() {
 if ($('.btn-group #en')) {
 	$('.btn-group #en').addClass("active");
 	$('#links').children().not("#en").css("display","none");

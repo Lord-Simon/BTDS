@@ -64,4 +64,4 @@ class MetaAddForm(ModelForm):
 class LinkAddForm(ModelForm):        
     class Meta: 
         model = Link
-        exclude = ('modified','created','closed','protected','visible','user')
+        exclude = ('modified','created','closed','protected','visible','user','dlcount')

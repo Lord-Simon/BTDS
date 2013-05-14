@@ -18,6 +18,7 @@ urlpatterns = patterns("btds.views",
     url(r'^acp/(?P<uid>\d+)/closed/$', 'acp_user_closed', name='btds_acp_user_closed'),
     url(r'^close/$', 'close', name='btds_close'),
     url(r'^edit/$', 'edit', name='btds_edit'),
+    url(r'^api/$', 'api', name='btds_api'),
 )
 urlpatterns += patterns("",
     url(r'^login/$','django.contrib.auth.views.login', {'template_name': 'btdst/login.html'}, name="login"),

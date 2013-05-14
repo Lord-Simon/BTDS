@@ -22,7 +22,7 @@
                 <td>{{ link.language }}</td>
                 <td>{{ link.link }}</td>
                 <td>
-                <form action="{% url btds_close %}" method="post">{% csrf_token %}
+                <form action="{% url "btds_close" %}" method="post">{% csrf_token %}
                     <input type="hidden" name="id_link" value="{{ link.id }}" />
                     <button type="submit" class="btn btn-danger btn-block" name="closeLink" >Delete</button>
                 </form>

@@ -13,7 +13,8 @@
         <link href="{% static 'btds/css/bootstrap-responsive.min.css' %}" rel="stylesheet">
         <link href="{% static 'btds/css/bootstrap-rowlink.min.css' %}" rel="stylesheet">
         {% block css %}{% endblock %}
-        
+        {% block hjs %}{% endblock %}
+
         <link rel="alternate" type="application/rss+xml" title="BTDS Feed" href="/feed/" />
 
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -34,20 +35,20 @@
                     <div class="nav-collapse collapse">
                         <ul class="nav">
                             <li class="active">
-                                <a href="{% url btds_index %}"><i class="icon-home icon-white"></i> Home</a>
+                                <a href="{% url "btds_index" %}"><i class="icon-home icon-white"></i> Home</a>
                             </li>
                             <li>
-                                <a href="{% url btds_updates %}"><i class="icon-eye-open icon-white"></i> Updates</a>
+                                <a href="{% url "btds_updates" %}"><i class="icon-eye-open icon-white"></i> Updates</a>
                             </li>
                             <li>
-                                <a href="{% url btds_index %}feed/"><i class="icon-exclamation-sign icon-white"></i> Feed</a>
+                                <a href="{% url "btds_index" %}feed/"><i class="icon-exclamation-sign icon-white"></i> Feed</a>
                             </li>
 							<li>
-                                <a href="{% url btds_index %}feedl/"><i class="icon-exclamation-sign icon-white"></i> Links Feed</a>
+                                <a href="{% url "btds_index" %}feedl/"><i class="icon-exclamation-sign icon-white"></i> Links Feed</a>
                             </li>
 							{% if user.is_authenticated %}
 							<li>
-                                <a href="{% url logout %}">Logout</a>
+                                <a href="{% url "logout" %}">Logout</a>
                             </li>
 							{% else %}
                             <li>
@@ -59,11 +60,11 @@
 						<ul class="nav pull-right">
                             {% if is_mortal or is_god %}
                             <li>
-                                <a href="{% url btds_acp %}">Admin Page</a>
+                                <a href="{% url "btds_acp" %}">Admin Page</a>
                             </li>
                             {% endif %}
                             <li>
-                                <a href="{% url btds_ucp %}">User Page</a>
+                                <a href="{% url "btds_ucp" %}">User Page</a>
                             </li>
 							<li class="dropdown">
 								<a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-plus icon-white"></i> Add</a>
@@ -104,7 +105,7 @@
                 <h3 id="myModalLabel">Add Meta</h3>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                <form class="form-horizontal" action="{% url "btds_add" %}" method="post">{% csrf_token %}
                     {% for field in MAF %}
 					<div class="control-group">
                         <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
@@ -115,7 +116,7 @@
                     </div>
 					{% endfor %}
 					<div class="modal-footer">
-						<input type="hidden" name="next" value="{% url btds_index %}" />
+						<input type="hidden" name="next" value="{% url "btds_index" %}" />
                         <button type="submit" class="btn btn-block btn-success" name="addMeta" >Add Meta</button>
 					</div>
                 </form>
@@ -130,7 +131,7 @@
                 <h3 id="myModalLabel">Add Author</h3>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                <form class="form-horizontal" action="{% url "btds_add" %}" method="post">{% csrf_token %}
                     {% for field in AAF %}
 					<div class="control-group">
                         <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
@@ -141,7 +142,7 @@
                     </div>
 					{% endfor %}
 					<div class="modal-footer">
-						<input type="hidden" name="next" value="{% url btds_index %}" />
+						<input type="hidden" name="next" value="{% url "btds_index" %}" />
                         <button type="submit" class="btn btn-block btn-success" name="addAuthor" >Add Author</button>
 					</div>
                 </form>
@@ -156,7 +157,7 @@
                 <h3 id="myModalLabel">Add Illustrator</h3>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                <form class="form-horizontal" action="{% url "btds_add" %}" method="post">{% csrf_token %}
                     {% for field in IAF %}
 					<div class="control-group">
                         <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
@@ -167,7 +168,7 @@
                     </div>
 					{% endfor %}
 					<div class="modal-footer">
-						<input type="hidden" name="next" value="{% url btds_index %}" />
+						<input type="hidden" name="next" value="{% url "btds_index" %}" />
                         <button type="submit" class="btn btn-block btn-success" name="addIllustrator" >Add Illustrator</button>
 					</div>
                 </form>
@@ -182,7 +183,7 @@
                 <h3 id="myModalLabel">Add Translator</h3>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                <form class="form-horizontal" action="{% url "btds_add" %}" method="post">{% csrf_token %}
                     {% for field in TAF %}
 					<div class="control-group">
                         <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
@@ -193,7 +194,7 @@
                     </div>
 					{% endfor %}
 					<div class="modal-footer">
-						<input type="hidden" name="next" value="{% url btds_index %}" />
+						<input type="hidden" name="next" value="{% url "btds_index" %}" />
                         <button type="submit" class="btn btn-block btn-success" name="addTranslator" >Add Translator</button>
 					</div>
                 </form>
@@ -208,7 +209,7 @@
                 <h3 id="myModalLabel">Add Editor</h3>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                <form class="form-horizontal" action="{% url "btds_add" %}" method="post">{% csrf_token %}
                     {% for field in EAF %}
 					<div class="control-group">
                         <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
@@ -219,7 +220,7 @@
                     </div>
 					{% endfor %}
 					<div class="modal-footer">
-						<input type="hidden" name="next" value="{% url btds_index %}" />
+						<input type="hidden" name="next" value="{% url "btds_index" %}" />
                         <button type="submit" class="btn btn-block btn-success" name="addEditor" >Add Editor</button>
 					</div>
                 </form>
@@ -234,7 +235,7 @@
                 <h3 id="myModalLabel">Add Language <a href="http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes">ISO 639-1</a></h3>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                <form class="form-horizontal" action="{% url "btds_add" %}" method="post">{% csrf_token %}
                     {% for field in LANGAF %}
 					<div class="control-group">
                         <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
@@ -245,7 +246,7 @@
                     </div>
 					{% endfor %}
 					<div class="modal-footer">
-						<input type="hidden" name="next" value="{% url btds_index %}" />
+						<input type="hidden" name="next" value="{% url "btds_index" %}" />
                         <button type="submit" class="btn btn-block btn-success" name="addLanguage" >Add Language</button>
 					</div>
                 </form>
@@ -260,7 +261,7 @@
                 <h3 id="myModalLabel">Add Publisher</h3>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                <form class="form-horizontal" action="{% url "btds_add" %}" method="post">{% csrf_token %}
                     {% for field in PAF %}
 					<div class="control-group">
                         <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
@@ -271,7 +272,7 @@
                     </div>
 					{% endfor %}
 					<div class="modal-footer">
-						<input type="hidden" name="next" value="{% url btds_index %}" />
+						<input type="hidden" name="next" value="{% url "btds_index" %}" />
                         <button type="submit" class="btn btn-block btn-success" name="addPublisher" >Add Publisher</button>
 					</div>
                 </form>
@@ -286,7 +287,7 @@
                 <h3 id="myModalLabel">Add Genre</h3>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                <form class="form-horizontal" action="{% url "btds_add" %}" method="post">{% csrf_token %}
                     {% for field in GAF %}
 					<div class="control-group">
                         <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
@@ -297,7 +298,7 @@
                     </div>
 					{% endfor %}
 					<div class="modal-footer">
-						<input type="hidden" name="next" value="{% url btds_index %}" />
+						<input type="hidden" name="next" value="{% url "btds_index" %}" />
                         <button type="submit" class="btn btn-block btn-success" name="addGenre" >Add Genre</button>
 					</div>
                 </form>
@@ -312,7 +313,7 @@
                 <h3 id="myModalLabel">Add Format</h3>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                <form class="form-horizontal" action="{% url "btds_add" %}" method="post">{% csrf_token %}
                     {% for field in FAF %}
 					<div class="control-group">
                         <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
@@ -323,7 +324,7 @@
                     </div>
 					{% endfor %}
 					<div class="modal-footer">
-						<input type="hidden" name="next" value="{% url btds_index %}" />
+						<input type="hidden" name="next" value="{% url "btds_index" %}" />
                         <button type="submit" class="btn btn-block btn-success" name="addFormat" >Add Format</button>
 					</div>
                 </form>
@@ -338,7 +339,7 @@
                 <h3 id="myModalLabel">Add Image</h3>
             </div>
             <div class="modal-body">
-                <form enctype="multipart/form-data" class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                <form enctype="multipart/form-data" class="form-horizontal" action="{% url "btds_add" %}" method="post">{% csrf_token %}
                     {% for field in IMGAF %}
 					<div class="control-group">
                         <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
@@ -349,7 +350,7 @@
                     </div>
 					{% endfor %}
 					<div class="modal-footer">
-						<input type="hidden" name="next" value="{% url btds_index %}" />
+						<input type="hidden" name="next" value="{% url "btds_index" %}" />
                         <button type="submit" class="btn btn-block btn-success" name="addImage" >Add Image</button>
 					</div>
                 </form>
@@ -364,7 +365,7 @@
                 <h3 id="myModalLabel">Add Novel</h3>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                <form class="form-horizontal" action="{% url "btds_add" %}" method="post">{% csrf_token %}
                     {% for field in NAF %}
 					<div class="control-group">
                         <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
@@ -375,7 +376,7 @@
                     </div>
 					{% endfor %}
 					<div class="modal-footer">
-						<input type="hidden" name="next" value="{% url btds_index %}" />
+						<input type="hidden" name="next" value="{% url "btds_index" %}" />
                         <button type="submit" class="btn btn-block btn-success" name="addNovel" >Add Novel</button>
 					</div>
                 </form>
@@ -390,7 +391,7 @@
                 <h3 id="myModalLabel">Add Volume</h3>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                <form class="form-horizontal" action="{% url "btds_add" %}" method="post">{% csrf_token %}
                     {% for field in VAF %}
 					<div class="control-group">
                         <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
@@ -401,7 +402,7 @@
                     </div>
 					{% endfor %}
                     <div class="modal-footer">
-						<input type="hidden" name="next" value="{% url btds_index %}" />
+						<input type="hidden" name="next" value="{% url "btds_index" %}" />
                         <button type="submit" class="btn btn-block btn-success" name="addVolume" >Add Volume</button>
 					</div>
                 </form>
@@ -416,7 +417,7 @@
                 <h3 id="myModalLabel">Add Link</h3>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                <form class="form-horizontal" action="{% url "btds_add" %}" method="post">{% csrf_token %}
 				{% for field in LAF %}
 					<div class="control-group">
                         <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
@@ -427,7 +428,7 @@
                     </div>
 				{% endfor %}
                     <div class="modal-footer">
-						<input type="hidden" name="next" value="{% url btds_index %}" />
+						<input type="hidden" name="next" value="{% url "btds_index" %}" />
                         <button type="submit" class="btn btn-block btn-success" name="addLink" >Add Link</button>
 					</div>
                 </form>
@@ -444,7 +445,7 @@
                 <h3 id="myModalLabel">Login</h3>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="{% url login %}" method="post">{% csrf_token %}
+                <form class="form-horizontal" action="{% url "login" %}" method="post">{% csrf_token %}
                     <div class="control-group">
                         <label class="control-label" for="inputUser">User</label>
                         <div class="controls">
@@ -459,7 +460,7 @@
                     </div>
                     <div class="control-group">
                         <div class="controls">
-							<input type="hidden" name="next" value="{% url btds_index %}" />
+							<input type="hidden" name="next" value="{% url "btds_index" %}" />
                             <button type="submit" class="btn" name="login" >Login</button>
                         </div>
                     </div>

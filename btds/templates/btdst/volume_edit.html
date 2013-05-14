@@ -2,7 +2,7 @@
 {% block body %}
 {% if metas %}
 <div class="container">
-<form class="form-horizontal" action="{% url btds_edit %}" method="post">{% csrf_token %}
+<form class="form-horizontal" action="{% url "btds_edit" %}" method="post">{% csrf_token %}
                     {% for field in VEF %}
 					<div class="control-group">
                         <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
@@ -13,7 +13,7 @@
                     </div>
 					{% endfor %}
 					<div class="modal-footer">
-						<input type="hidden" name="next" value="{% url btds_index %}" />
+						<input type="hidden" name="next" value="{% url "btds_index" %}" />
                         <button type="submit" class="btn btn-block btn-success" name="editVolume" >Accept</button>
 					</div>
                 </form>

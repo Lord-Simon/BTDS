@@ -5,6 +5,13 @@
 {% block js %}
 <script src="{% static 'btds/js/btds.js' %}"></script>
 {% endblock %}
+{% block hjs %}
+<script>
+function uldc(lid) {
+    $.post("{% url "btds_edit" %}", { linkDownloadCount: "", id_link: lid } );
+}
+</script>
+{% endblock %}
 <div class="container">
 {% if user.is_authenticated  %}
 {% if volume.get_images %}
@@ -79,7 +86,7 @@
 <div id="{{ lang.iso }}">
 <ul>
 {% for link in volume.get_link %}
-{% if link.visible %}{% if not link.closed %}{% if link.language.iso == lang.iso %}<li><a href="{{ link.link }}" class="btn"><b>{{ link.file_format }}</b> by {{ link.user }}</a></li>{% endif %}{% endif %}{% endif %}
+{% if link.visible %}{% if not link.closed %}{% if link.language.iso == lang.iso %}<li><a href="{{ link.link }}" onclick="uldc({{ link.id }})" class="btn"><b>{{ link.file_format }}</b> by {{ link.user }}</a></li>{% endif %}{% endif %}{% endif %}
 {% endfor %}
 </ul>
 </div>
@@ -98,7 +105,7 @@
         <h3 id="myModalLabel">Edit Meta</h3>
     </div>
     <div class="modal-body">
-        <form class="form-horizontal" action="{% url btds_edit %}" method="post">{% csrf_token %}
+        <form class="form-horizontal" action="{% url "btds_edit" %}" method="post">{% csrf_token %}
             {% for field in MEF %}
             <div class="control-group">
                 <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
@@ -109,7 +116,7 @@
             </div>
             {% endfor %}
             <div class="modal-footer">
-                <input type="hidden" name="next" value="{% url btds_index %}" />
+                <input type="hidden" name="next" value="{% url "btds_index" %}" />
                 <input type="hidden" name="id_meta" value="{{ KEY }}" />
                 <button type="submit" class="btn btn-block btn-success" name="editMeta" >Accept Changes</button>
             </div>
@@ -125,7 +132,7 @@
                 <h3 id="myModalLabel">Add Cover Image</h3>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" enctype="multipart/form-data" action="{% url btds_add %}" method="post">{% csrf_token %}
+                <form class="form-horizontal" enctype="multipart/form-data" action="{% url "btds_add" %}" method="post">{% csrf_token %}
                     {% for field in IMGAF %}
 					<div class="control-group">
                         <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
@@ -142,7 +149,7 @@
                     </div>
 					{% endfor %}
 					<div class="modal-footer">
-						<input type="hidden" name="next" value="{% url btds_index %}" />
+						<input type="hidden" name="next" value="{% url "btds_index" %}" />
                         <button type="submit" class="btn btn-block btn-success" name="addImage" >Add Cover Image</button>
 					</div>
                 </form>
@@ -155,7 +162,7 @@
                 <h3 id="myModalLabel">Add Meta</h3>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                <form class="form-horizontal" action="{% url "btds_add" %}" method="post">{% csrf_token %}
                     {% for field in MAF %}
 					<div class="control-group">
                         <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
@@ -172,7 +179,7 @@
                     </div>
 					{% endfor %}
 					<div class="modal-footer">
-						<input type="hidden" name="next" value="{% url btds_index %}" />
+						<input type="hidden" name="next" value="{% url "btds_index" %}" />
                         <button type="submit" class="btn btn-block btn-success" name="addMeta" >Add Cover Image</button>
 					</div>
                 </form>
@@ -185,7 +192,7 @@
                 <h3 id="myModalLabel">Add Link</h3>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" action="{% url btds_add %}" method="post">{% csrf_token %}
+                <form class="form-horizontal" action="{% url "btds_add" %}" method="post">{% csrf_token %}
                     {% for field in vlaf %}
 					<div class="control-group">
                         <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
@@ -196,7 +203,7 @@
                     </div>
 					{% endfor %}
 					<div class="modal-footer">
-						<input type="hidden" name="next" value="{% url btds_index %}" />
+						<input type="hidden" name="next" value="{% url "btds_index" %}" />
                         <button type="submit" class="btn btn-block btn-success" name="addLink" >Add Link</button>
 					</div>
                 </form>
@@ -211,7 +218,7 @@
         <h3 id="myModalLabel">Edit Volume</h3>
     </div>
     <div class="modal-body">
-        <form class="form-horizontal" action="{% url btds_edit %}" method="post">{% csrf_token %}
+        <form class="form-horizontal" action="{% url "btds_edit" %}" method="post">{% csrf_token %}
             {% for field in VEF %}
             <div class="control-group">
                 <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
@@ -222,7 +229,7 @@
             </div>
             {% endfor %}
             <div class="modal-footer">
-                <input type="hidden" name="next" value="{% url btds_index %}" />
+                <input type="hidden" name="next" value="{% url "btds_index" %}" />
                 <input type="hidden" name="id_volume" value="{{ volume.id }}" />
                 <button type="submit" class="btn btn-block btn-success" name="editVolume" >Accept Changes</button>
             </div>

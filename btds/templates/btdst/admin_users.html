@@ -27,7 +27,7 @@
                 <td><a href="{{ val.id }}/protected">{{ val.protected }}</a></td>
                 <td><a href="{{ val.id }}/closed">{{ val.closed }}</a></td>
                 <td id="auta">
-                <form action="{% url btds_close %}" method="post">{% csrf_token %}
+                <form action="{% url "btds_close" %}" method="post">{% csrf_token %}
                     <input type="hidden" name="id_user" value="{{ val.id }}" />
                     <button type="submit" class="btn btn-danger btn-block" name="closeUser" >Close Account</button>
                 </form>

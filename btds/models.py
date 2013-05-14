@@ -122,6 +122,7 @@ class Link(models.Model):
     link = models.URLField(max_length=500)
     file_format = models.ForeignKey(Format)
     user = models.ForeignKey(User)
+    dlcount = models.BigIntegerField(default=0)
     visible = models.BooleanField(default=False)
     protected = models.BooleanField(default=False)
     closed = models.BooleanField(default=False)
