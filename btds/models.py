@@ -14,23 +14,23 @@ PUBLISHER_TYPE = (
 )
 
 class Author(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     def __unicode__(self):
         return self.name
 
 class Illustrator(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     def __unicode__(self):
         return self.name
 
 class Translator(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     link = models.URLField(max_length=500, blank=True, null=True)
     def __unicode__(self):
         return self.name
 
 class Editor(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     link = models.URLField(max_length=500, blank=True, null=True)
     def __unicode__(self):
         return self.name
@@ -49,19 +49,19 @@ class Publisher(models.Model):
         return self.name
 
 class Genre(models.Model):
-    name = models.CharField(max_length = 255)
+    name = models.CharField(max_length = 255, unique=True)
     def __unicode__(self):
         return self.name
 
 class Format(models.Model):
-    name = models.CharField(max_length = 5)
+    name = models.CharField(max_length = 5, unique=True)
     def __unicode__(self):
         return self.name
 
 class Novel(models.Model):
     name = models.CharField(max_length=255, blank=False)
     genre = models.ManyToManyField(Genre, blank=True, null=True)
-    illustrator = models.ForeignKey(Illustrator)
+    illustrator = models.ForeignKey(Illustrator, blank=True, null=True)
     author = models.ForeignKey(Author)
     synopsis = models.TextField(blank=True)
     def get_absolute_url(self):
@@ -71,13 +71,13 @@ class Novel(models.Model):
 
 class Volume(models.Model):
     name = models.CharField(max_length=255, blank=True)
-    number = models.PositiveIntegerField(blank=True)
+    number = models.PositiveSmallIntegerField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     novel = models.ForeignKey(Novel)
     synopsis = models.TextField(blank=True)
     isbn = models.CharField(max_length=17, blank=True)
-    year = models.PositiveSmallIntegerField(max_length=4)
+    year = models.PositiveSmallIntegerField(max_length=4, blank=True, null=True)
     def get_absolute_url(self):
         return reverse('btds.views.volume',None,[str(self.id)])
     def get_translator(self):
@@ -102,7 +102,7 @@ class Volume(models.Model):
 class Meta(models.Model):
     volume = models.ForeignKey(Volume)
     language = models.ForeignKey(Language)
-    publisher = models.ForeignKey(Publisher, blank=True, null=True)
+    publisher = models.ForeignKey(Publisher)
     url = models.URLField(max_length=500, blank=True, null=True)
     chapter_url = models.TextField(blank=True, null=True)
     translator = models.ManyToManyField(Translator, blank=True, null=True)

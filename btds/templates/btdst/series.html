@@ -1,7 +1,11 @@
 {% extends 'btdst/body.html' %}
 {% block body %}
 <div class="container-fluid">
-{% if user.is_authenticated %}<a href="#editNovel" role="button" data-toggle="modal" class="btn btn-block btn-inverse"><i class="icon-edit icon-white"></i> <b>Edit</b></a>{% endif %}
+{% if user.is_authenticated %}
+<div class="row-fluid">
+<div class="span6"><a href="#editNovel" role="button" data-toggle="modal" class="btn btn-block btn-inverse"><i class="icon-edit icon-white"></i> <b>Edit</b></a></div>
+<div class="span6"><a href="#addNovelVolume" role="button" data-toggle="modal" class="btn btn-block btn-success"><i class="icon-plus icon-white"></i> <b>Add Volume</b></a></div>
+</div>{% endif %}
 {% if series %}
 	<table class="table" data-provides="rowlink">
 		<thead>
@@ -15,14 +19,13 @@
 {% for ser in series %}
 			<tr>
 				<td><a href="{{ ser.get_absolute_url }}">{{ ser.novel.name }}</a></td>
-				<td>{{ ser.number }}</td>
+				<td>{% if ser.number %}{{ ser.number }}{% endif %}</td>
 				<td>{{ ser.name }}</td>
 			</tr>
 {% endfor %}
 		</tbody>
 	</table>
 {% endif %}
-{% if user.is_authenticated %}<a href="#addNovelVolume" role="button" data-toggle="modal" class="btn btn-block btn-success"><i class="icon-plus icon-white"></i> <b>Add Volume</b></a>{% endif %}
 </div>
 {% if user.is_authenticated %}
 <!-- editNovel Part -->
