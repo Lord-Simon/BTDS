@@ -14,5 +14,6 @@ setup(name='BTDS',
     ],
     install_requires=[
         "Django >= 1.4.0",
+        "django-bootstrap-toolkit >= 2.12.1"
     ],
 )
