@@ -1,0 +1,49 @@
+{% extends 'btds/base.html' %}
+{% block body %}
+    <div class="container-fluid">
+        {% if pl.count > 0 %}
+            <a href="pending/" role="button" data-toggle="modal" class="btn btn-block btn-warning">{{ pl.count }}
+                Link{{ pl.count|pluralize }} Pending</b></a>
+        {% endif %}
+        {% if users %}
+            <table class="table table-striped" id="aut">
+                <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Links</th>
+                    <th>Active</th>
+                    <th>Pending</th>
+                    <th>Protected</th>
+                    <th>Closed</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for user, val in users.items %}
+                    <tr>
+                        <td id="auta">{{ user }}</td>
+                        <td><a href="{{ val.id }}/all">{{ val.links }}</a></td>
+                        <td><a href="{{ val.id }}/active">{{ val.active }}</a></td>
+                        <td><a href="{{ val.id }}/pending">{{ val.pending }}</a></td>
+                        <td><a href="{{ val.id }}/protected">{{ val.protected }}</a></td>
+                        <td><a href="{{ val.id }}/closed">{{ val.closed }}</a></td>
+                        <td id="auta">
+                            <form action="{% url "btds_close" %}" method="post">{% csrf_token %}
+                                <input type="hidden" name="id_user" value="{{ val.id }}"/>
+                                <button type="submit" class="btn btn-danger btn-block" name="closeUser">Close Account
+                                </button>
+                            </form>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}
+{% load staticfiles %}
+{% block js %}
+    <script src="{% static 'btds/js/btds-admin.js' %}"></script>
+{% endblock %}
+{% block css %}
+    <link href="{% static 'btds/css/btds-admin.css' %}" rel="stylesheet">
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'btds/base.html' %}
+{% block body %}
+    <div class="container-fluid">
+        {% if novels %}
+            <table class="table" data-provides="rowlink">
+                <thead>
+                <tr>
+                    <th>Series</th>
+                    <th>Author</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for novel in novels %}
+                    <tr{% if novel.volume_set.all.count <= 0 %} class="btn-danger"{% endif %}>
+                        <td><a href="{{ novel.get_absolute_url }}">{{ novel.name }}</a></td>
+                        <td>{{ novel.author }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}
+{% block js %}
+    {% load staticfiles %}
+    <script src="{% static 'btds/js/bootstrap-rowlink.min.js' %}"></script>
+{% endblock %}

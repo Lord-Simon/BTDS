@@ -1,0 +1,54 @@
+{% extends 'btds/base.html' %}
+{% block body %}
+    <div class="container-fluid">
+        {% if links %}
+            <table class="table table-striped" data-provides="rowlink">
+                <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Meta</th>
+                    <th>Format</th>
+                    <th>Language</th>
+                    <th>Link</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for link in links %}
+                    <tr>
+                        <td>{{ link.user.username }}</td>
+                        <td>{{ link.meta }}</td>
+                        <td>{{ link.file_format }}</td>
+                        <td>{{ link.language }}</td>
+                        <td>{{ link.link }}</td>
+                        <td>
+                            {% if acp_pending or acp_user_all or acp_user_pending or acp_user_closed %}
+                                {% if not link.visible or link.closed %}
+                                    <form action="{% url "btds_edit" %}" method="post">{% csrf_token %}
+                                        <input type="hidden" name="id_link" value="{{ link.id }}"/>
+                                        <button type="submit" class="btn btn-success btn-block" name="acceptLink">
+                                            Accept
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            {% endif %}
+                            {% if not link.closed and not link.protected %}
+                                <form action="{% url "btds_close" %}" method="post">{% csrf_token %}
+                                    <input type="hidden" name="id_link" value="{{ link.id }}"/>
+                                    <button type="submit" class="btn btn-danger btn-block" name="closeLink">Close
+                                    </button>
+                                </form>
+                            {% elif user.is_superuser and not link.closed %}
+                                <form action="{% url "btds_close" %}" method="post">{% csrf_token %}
+                                    <input type="hidden" name="id_link" value="{{ link.id }}"/>
+                                    <button type="submit" class="btn btn-danger btn-block" name="closeLink">Close
+                                    </button>
+                                </form>
+                            {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'btds/base.html' %}
+{% block body %}
+    <div class="container-fluid">
+        {% if change_list %}
+            <table class="table" data-provides="rowlink">
+                <thead>
+                <tr>
+                    <th>Entry</th>
+                    {% if edit == "image" %}
+                        <th>Cover</th>
+                        <th>File Name</th>
+                        <th>Opt. Name</th>{% endif %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for change in change_list %}
+                    <tr>
+                        {% if edit == "image" %}
+                            <td>{{ change.volume }}</td>{% endif %}
+                        {% if edit == "image" %}
+                            <td>
+                            {% if change.cover %}<i class="icon-ok"></i>{% else %}<i class="icon-remove"></i>{% endif %}
+                            </td>{% endif %}
+                        <td><a href="{% url "btds_change_entry" edit change.id %}">{{ change }}</a></td>
+                        {% if edit == "image" %}
+                            <td>{{ change.name }}</td>{% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}
+{% block js %}
+    {% load staticfiles %}
+    <script src="{% static 'btds/js/bootstrap-rowlink.min.js' %}"></script>
+{% endblock %}

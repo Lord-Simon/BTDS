@@ -13,3 +13,6 @@ $(".btn-group").children().click(function() {
 	$('#links').children().css("display","none");
 	$('#links #' + $(this).attr("id")).css("display","block");
 });
+
+//$("[id^=edit]").on('show', function () { $('.modal-body',this).css({width:'auto',height:'auto', 'max-height':'90%'}); });
+//$("[id^=add]").on('show', function () { $('.modal-body',this).css({width:'auto',height:'auto', 'max-height':'90%'}); });

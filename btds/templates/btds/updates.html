@@ -1,0 +1,51 @@
+{% extends 'btds/base.html' %}
+{% block body %}
+    {% if volumes %}
+        <div class="container-fluid">
+            {% for volume in volumes %}
+                <div class="hero-unit">
+                    {% if volume.get_cover %}
+                        <img src="/media/{{ volume.get_cover }}" class="span3 pull-right">
+                    {% endif %}
+                    <h1>{{ volume.novel.name }}</h1>
+
+                    <p><strong>Series:</strong> <a
+                            href="{{ volume.novel.get_absolute_url }}">{{ volume.novel.name }}</a></p>
+                    {% if volume.name %}
+                        <p><strong>Title:</strong> {{ volume.name }}</p>
+                    {% endif %}
+                    {% if volume.number %}
+                        <p><strong>Volume:</strong> {{ volume.number }}</p>
+                    {% endif %}
+                    {% if volume.novel.author.name %}
+                        <p><strong>Author:</strong> {{ volume.novel.author.name }}</p>
+                    {% endif %}
+                    {% if volume.novel.illustrator.name %}
+                        <p><strong>Illustrator:</strong> {{ volume.novel.illustrator.name }}</p>
+                    {% endif %}
+                    {% if volume.isbn %}
+                        <p><strong>ISBN:</strong> {{ volume.isbn }}</p>
+                    {% endif %}
+                    {% if volume.get_genre %}
+                        <p><strong>Genre:</strong>{% for g in volume.get_genre %} {{ g.name }}{% endfor %}</p>
+                    {% endif %}
+                    {% if volume.get_translator %}
+                        <p><strong>Translator{{ volume.get_translator|pluralize }}:</strong>
+                            {% for t in volume.get_translator %} <a href="{{ t.link }}">{{ t.name }}</a>{% endfor %}</p>
+                    {% endif %}
+                    {% if volume.get_editor %}
+                        <p><strong>Editor{{ volume.get_editor|pluralize }}:</strong>{% for e in volume.get_editor %}
+                            <a href="{{ e.link }}">{{ e.name }}</a>{% endfor %}</p>
+                    {% endif %}
+                    {% if volume.get_publisher %}
+                        <p><strong>Source:</strong> {% for m in volume.meta_set.all %}<a href="
+                                {% if m.url %}{{ m.url }}{% else %}{{ m.publisher.link }}{% endif %}">{{ m.publisher.name }}</a>{% endfor %}
+                        </p>
+                    {% endif %}
+                    <a href="{{ volume.get_absolute_url }}" class="btn btn-primary btn-large"><i
+                            class="icon-arrow-right icon-white"></i> Novel</a>
+                </div>
+                </div>
+            {% endfor %}
+    {% endif %}
+{% endblock %}
