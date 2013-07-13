@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url, include
 from btds.feeds import VolumeFeed, LinkFeed
 
 urlpatterns = patterns("btds.views",
@@ -28,6 +28,7 @@ urlpatterns += patterns("",
                         url(r'^feed/$', VolumeFeed(), name = 'btds_feed'),
                         url(r'^feedl/$', LinkFeed(), name = 'btds_feed_links'),
 )
+
 urlpatterns += patterns('django.contrib.flatpages.views',
                         url(r'^about/$', 'flatpage', {'url':'/about/'}, name = 'btds_about'),
                         url(r'^disclaimer/$', 'flatpage', {'url':'/disclaimer/'}, name = 'btds_disclaimer'),

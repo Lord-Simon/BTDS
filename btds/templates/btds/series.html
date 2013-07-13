@@ -24,7 +24,7 @@
                 {% for ser in series %}
                     <tr>
                         <td><a href="{{ ser.get_absolute_url }}">{{ ser.novel.name }}</a></td>
-                        <td>{% if ser.number %}{{ ser.number }}{% endif %}</td>
+                        <td>{% if ser.number %}{{ ser.number|floatformat }}{% endif %}</td>
                         <td>{{ ser.name }}</td>
                     </tr>
                 {% endfor %}

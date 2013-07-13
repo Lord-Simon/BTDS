@@ -10,6 +10,7 @@
                     <form class="form-horizontal" action="{% url "btds_edit" %}" method="post">{% csrf_token %}
                         {% for field in form %}
                             <div class="control-group
+
                                     {% if edit == "image" %}{% if field.name == "volume" %} hidden{% endif %}{% endif %}">
                                 <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
                                 {% if edit == "image" %}

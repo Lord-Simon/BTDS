@@ -9,12 +9,14 @@
 body {
     padding-top: 60px;
 }
+
 body::-webkit-scrollbar {
     -webkit-appearance: none;
     width: 11px;
     height: 11px;
     background-color: #333333;
 }
+
 body {
     background-color: #E5E5E5;
 }
@@ -28,8 +30,8 @@ body::-webkit-scrollbar-thumb {
 .toc {
     top: auto;
     bottom: auto;
-    position:fixed;
-    left:-200px;
+    position: fixed;
+    left: -200px;
 }
 
 .btlib-center {
@@ -37,8 +39,13 @@ body::-webkit-scrollbar-thumb {
     padding-right: auto;
 }
 
-.bottom-nav > div > ul > li > * {padding-top: 5px !important;}
-.bottom-nav {height: 30px !important;}
+.bottom-nav > div > ul > li > * {
+    padding-top: 5px !important;
+}
+
+.bottom-nav {
+    height: 30px !important;
+}
 
 @media (min-width: 980px) {
     .btlib-mobile-toc {
@@ -47,11 +54,11 @@ body::-webkit-scrollbar-thumb {
 }
 
 div.btn-group[data-toggle=buttons-radio] input[type=radio] {
-    display:    block;
-    position:   absolute;
-    top:        0;
-    left:       0;
-    width:      100%;
-    height:     100%;
-    opacity:    0;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
 }

@@ -38,8 +38,9 @@
                             <a href="{{ e.link }}">{{ e.name }}</a>{% endfor %}</p>
                     {% endif %}
                     {% if volume.get_publisher %}
-                        <p><strong>Source:</strong> {% for m in volume.meta_set.all %}<a href="
-                                {% if m.url %}{{ m.url }}{% else %}{{ m.publisher.link }}{% endif %}">{{ m.publisher.name }}</a>{% endfor %}
+                        <p><strong>Source:</strong> {% for m in volume.meta.all %}<a href="
+                                {% if m.url %}{{ m.url }}{% else %}{{ m.publisher.link }}{% endif %}">
+                            {{ m.publisher.name }}</a>{% endfor %}
                         </p>
                     {% endif %}
                     <a href="{{ volume.get_absolute_url }}" class="btn btn-primary btn-large"><i

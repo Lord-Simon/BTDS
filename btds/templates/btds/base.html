@@ -7,6 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Simon">
     {% load staticfiles %}
+    <link rel="icon shortcut" href="% static 'btds/favicon.ico' %}" type="image/x-icon" />
     <link href="{% static 'btds/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'btds/css/docs.css' %}" rel="stylesheet">
     <link href="{% static 'btds/css/btds.css' %}" rel="stylesheet">
@@ -54,9 +55,20 @@
                         <a href="{% url "btds_about" %}"><i class="icon-book icon-white"></i> About</a>
                     </li>
                     {% if user.is_authenticated %}
-                        <li>
-                            <a href="{% url "auth_logout" %}"><i class="icon-user icon-white"></i> Logout</a>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i
+                                    class="icon-user icon-white"></i> Account</a>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                <li>
+                                    <a href="{% url "auth_password_change" %}?next={{ request.path }}">Change
+                                        Password</a>
+                                </li>
+                                <li>
+                                    <a href="{% url "auth_logout" %}">Logout</a>
+                                </li>
+                            </ul>
                         </li>
+
                     {% else %}
                         <li>
                             <a href="#login" role="button" data-toggle="modal"><i class="icon-user icon-white"></i>
@@ -184,18 +196,21 @@
                                required="required">
                     </div>
                 </div>
-                <div class="control-group">
-                    <div class="controls">
-                        <input type="hidden" name="next" value="{% url "btds_index" %}"/>
-                        <button type="submit" class="btn" name="login">Login</button>
-                    </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="next" value="{% url "btds_index" %}"/>
+                    <button type="submit" class="btn btn-success pull-right span2" name="login">Login</button>
+                    <a class="btn btn-info pull-left span1"
+                       href="{% url "registration_register" %}?next={{ request.path }}">Register</a>
+                    <a class="btn btn-warning pull-left span1"
+                       href="{% url "auth_password_reset" %}?next={{ request.path }}">Restore</a>
                 </div>
             </form>
         </div>
     </div>
 {% endif %}
 
-<script src="http://code.jquery.com/jquery-latest.js"></script>
+<!-- <script src="http://code.jquery.com/jquery-latest.js"></script> -->
+<script src="{% static 'slai/js/jquery-latest.js' %}"></script>
 <script src="{% static 'btds/js/bootstrap.min.js' %}"></script>
 {% block js %}{% endblock %}
 <script>

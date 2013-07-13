@@ -1,33 +1,28 @@
 from django.shortcuts import render_to_response, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
-from uuid import uuid4
-from django.core import serializers
 from btds.models import *
 from btds.forms import *
 from django.template import RequestContext
-
-
-def api(request):
-    return HttpResponse(serializers.serialize("json", Novel.objects.all()))
-
+from django.db.models import Count
+from django.conf import settings
 
 def index(request):
     if request.user.is_authenticated():
-        novels = Novel.objects.all().order_by('name')
+        novels = Novel.objects.select_related('author').annotate(num_vol = Count('volume')).order_by('name')
         return render_to_response('btds/index.html', {'novels':novels}, context_instance = RequestContext(request))
-    novels = Novel.objects.filter(pk__in = Volume.objects.all().values('novel')).order_by('name')
+    novels = Novel.objects.filter(pk__in = Volume.objects.all().values('novel')).select_related('author').order_by('name')
     return render_to_response('btds/index.html', {'novels':novels}, context_instance = RequestContext(request))
 
 
 def series(request, sid):
     novel = get_object_or_404(Novel, id = sid)
     if request.user.is_authenticated():
-        series = novel.volume_set.all().order_by('number', 'id')
+        series = novel.volume.all().order_by('number', 'id')
         nef = NovelEditForm(instance = novel)
         return render_to_response('btds/series.html', {'series':series, 'NEF':nef, 'NID':sid, 'novel':novel},
                                   context_instance = RequestContext(request))
-    series = novel.volume_set.filter(pk__in = Meta.objects.all().values('volume')).order_by('number', 'id')
+    series = novel.volume.filter(pk__in = Meta.objects.all().values('volume')).order_by('number', 'id')
     return render_to_response('btds/series.html', {'series':series}, context_instance = RequestContext(request))
 
 
@@ -39,13 +34,14 @@ def volume(request, vid):
     vlaf.fields["meta"].queryset = Meta.objects.filter(volume__id = vid)
     viaf.fields["meta"].queryset = Meta.objects.filter(volume__id = vid)
     if request.user.is_authenticated():
-        if volume.meta_set.all():
+        pul = Link.objects.filter(user=request.user, visible=False, closed=False)
+        if volume.meta.all():
             d = []
-            [d.append((m.id, MetaAddForm(instance = Meta.objects.get(id = m.id)))) for m in volume.meta_set.all()]
+            [d.append((m.id, MetaEditForm(instance = Meta.objects.get(id = m.id)))) for m in volume.meta.all()]
             return render_to_response('btds/volume.html',
-                                      {'volume':volume, 'VEF':vef, 'MED':dict(d), 'vlaf':vlaf, 'viaf':viaf},
+                                      {'volume':volume, 'VEF':vef, 'MED':dict(d), 'vlaf':vlaf, 'viaf':viaf, 'pul':pul},
                                       context_instance = RequestContext(request))
-        return render_to_response('btds/volume.html', {'volume':volume, 'VEF':vef, 'vlaf':vlaf, 'viaf':viaf},
+        return render_to_response('btds/volume.html', {'volume':volume, 'VEF':vef, 'vlaf':vlaf, 'viaf':viaf, 'pul':pul},
                                   context_instance = RequestContext(request))
     return render_to_response('btds/volume.html', {'volume':volume}, context_instance = RequestContext(request))
 
@@ -53,7 +49,6 @@ def volume(request, vid):
 def updates(request):
     volumes = Volume.objects.order_by('-id')[:25]
     return render_to_response('btds/updates.html', {'volumes':volumes}, context_instance = RequestContext(request))
-
 
 @login_required(login_url = '/accounts/login/')
 def ucp(request):
@@ -75,7 +70,7 @@ def ucp_edit_meta(request, lid):
 
 @login_required(login_url = '/accounts/login/')
 def acp(request):
-    if request.user.is_authenticated() and (request.user.groups.filter(name = 'Admin') or request.user.is_superuser):
+    if request.user.is_authenticated() and (request.user.groups.filter(name = settings.BTDS_GROUP_ADMIN) or request.user.is_superuser):
         d = []
         [d.append((u.username, {'id':u.id, 'links':Link.objects.filter(user = u).count(),
                                 'active':Link.objects.filter(user = u, visible = True, closed = False).count(),
@@ -83,7 +78,7 @@ def acp(request):
                                 'protected':Link.objects.filter(user = u, protected = True, visible = True,
                                                                 closed = False).count(),
                                 'closed':Link.objects.filter(user = u, closed = True).count()})) for u in
-         User.objects.filter(groups__name = 'Layer 8', is_active = True)]
+         User.objects.filter(groups__name = settings.BTDS_GROUP_USER, is_active = True)]
         pending = Link.objects.filter(visible = False, closed = False)
         return render_to_response('btds/admin_users.html', {'users':dict(d), 'pl':pending},
                                   context_instance = RequestContext(request))
@@ -92,7 +87,7 @@ def acp(request):
 
 @login_required(login_url = '/accounts/login/')
 def acp_pending(request):
-    if request.user.is_authenticated() and (request.user.groups.filter(name = 'Admin') or request.user.is_superuser):
+    if request.user.is_authenticated() and (request.user.groups.filter(name = settings.BTDS_GROUP_ADMIN) or request.user.is_superuser):
         links = Link.objects.filter(visible = False, closed = False)
         return render_to_response('btds/acp.html', {'links':links, 'acp_pending':'True'},
                                   context_instance = RequestContext(request))
@@ -100,8 +95,8 @@ def acp_pending(request):
 
 @login_required(login_url = '/accounts/login/')
 def acp_user_all(request, uid):
-    if request.user.is_authenticated() and (request.user.groups.filter(name = 'Admin') or request.user.is_superuser):
-        user = get_object_or_404(User, id = uid, groups__name = 'Layer 8')
+    if request.user.is_authenticated() and (request.user.groups.filter(name = settings.BTDS_GROUP_ADMIN) or request.user.is_superuser):
+        user = get_object_or_404(User, id = uid, groups__name = settings.BTDS_GROUP_USER)
         links = Link.objects.filter(user = user)
         return render_to_response('btds/acp.html', {'links':links, 'acp_user_all':'True'},
                                   context_instance = RequestContext(request))
@@ -109,8 +104,8 @@ def acp_user_all(request, uid):
 
 @login_required(login_url = '/accounts/login/')
 def acp_user_active(request, uid):
-    if request.user.is_authenticated() and (request.user.groups.filter(name = 'Admin') or request.user.is_superuser):
-        user = get_object_or_404(User, id = uid, groups__name = 'Layer 8')
+    if request.user.is_authenticated() and (request.user.groups.filter(name = settings.BTDS_GROUP_ADMIN) or request.user.is_superuser):
+        user = get_object_or_404(User, id = uid, groups__name = settings.BTDS_GROUP_USER)
         links = Link.objects.filter(user = user, visible = True, closed = False)
         return render_to_response('btds/acp.html', {'links':links, 'acp_user_active':'True'},
                                   context_instance = RequestContext(request))
@@ -118,8 +113,8 @@ def acp_user_active(request, uid):
 
 @login_required(login_url = '/accounts/login/')
 def acp_user_pending(request, uid):
-    if request.user.is_authenticated() and (request.user.groups.filter(name = 'Admin') or request.user.is_superuser):
-        user = get_object_or_404(User, id = uid, groups__name = 'Layer 8')
+    if request.user.is_authenticated() and (request.user.groups.filter(name = settings.BTDS_GROUP_ADMIN) or request.user.is_superuser):
+        user = get_object_or_404(User, id = uid, groups__name = settings.BTDS_GROUP_USER)
         links = Link.objects.filter(user = user, visible = False, closed = False)
         return render_to_response('btds/acp.html', {'links':links, 'acp_user_pending':'True'},
                                   context_instance = RequestContext(request))
@@ -127,8 +122,8 @@ def acp_user_pending(request, uid):
 
 @login_required(login_url = '/accounts/login/')
 def acp_user_protected(request, uid):
-    if request.user.is_authenticated() and (request.user.groups.filter(name = 'Admin') or request.user.is_superuser):
-        user = get_object_or_404(User, id = uid, groups__name = 'Layer 8')
+    if request.user.is_authenticated() and (request.user.groups.filter(name = settings.BTDS_GROUP_ADMIN) or request.user.is_superuser):
+        user = get_object_or_404(User, id = uid, groups__name = settings.BTDS_GROUP_USER)
         links = Link.objects.filter(user = user, protected = True, closed = False)
         return render_to_response('btds/acp.html', {'links':links, 'acp_user_protected':'True'},
                                   context_instance = RequestContext(request))
@@ -136,8 +131,8 @@ def acp_user_protected(request, uid):
 
 @login_required(login_url = '/accounts/login/')
 def acp_user_closed(request, uid):
-    if request.user.is_authenticated() and (request.user.groups.filter(name = 'Admin') or request.user.is_superuser):
-        user = get_object_or_404(User, id = uid, groups__name = 'Layer 8')
+    if request.user.is_authenticated() and (request.user.groups.filter(name = settings.BTDS_GROUP_ADMIN) or request.user.is_superuser):
+        user = get_object_or_404(User, id = uid, groups__name = settings.BTDS_GROUP_USER)
         links = Link.objects.filter(user = user, closed = True)
         return render_to_response('btds/acp.html', {'links':links, 'acp_user_closed':'True'},
                                   context_instance = RequestContext(request))
@@ -149,7 +144,7 @@ def edit(request):
         link = get_object_or_404(Link, closed = False, id = request.POST.get("id_link", ""))
         link.incr_dlcount()
         return HttpResponse()
-    if request.user.is_authenticated() and (request.user.groups.filter(name = 'Admin') or request.user.is_superuser):
+    if request.user.is_authenticated() and (request.user.groups.filter(name = settings.BTDS_GROUP_ADMIN) or request.user.is_superuser):
         if 'acceptLink' in request.POST:
             link = Link.objects.get(id = request.POST.get("id_link", ""))
             link.visible = True
@@ -223,6 +218,7 @@ def edit(request):
             if form.is_valid():
                 link = form.save(commit = False)
                 link.user = request.user
+                link.visible = False
                 link.save()
             return redirect('btds_ucp')
         if 'makeCover' in request.POST:
@@ -237,29 +233,27 @@ def edit(request):
 
 @login_required(login_url = '/accounts/login/')
 def close(request):
-    if request.user.is_authenticated():
-        if 'closeLink' in request.POST:
-            if request.user.groups.filter(name = 'Admin') or request.user.is_superuser:
-                link = Link.objects.get(id = request.POST.get("id_link", ""))
-            else:
-                link = Link.objects.get(user = request.user, id = request.POST.get("id_link", ""))
-            link.closed = True
-            link.save()
+    if 'closeLink' in request.POST:
+        if request.user.groups.filter(name = settings.BTDS_GROUP_ADMIN) or request.user.is_superuser:
+            link = get_object_or_404(Link, id = request.POST.get("id_link", ""))
+        else:
+            link = get_object_or_404(Link, user = request.user, id = request.POST.get("id_link", ""))
+        link.closed = True
+        link.save()
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    if 'deleteImage' in request.POST:
+        image = get_object_or_404(Image, id = request.POST.get("id_image", ""))
+        image.delete()
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    if request.user.groups.filter(name = settings.BTDS_GROUP_ADMIN) or request.user.is_superuser:
+        if 'closeUser' in request.POST:
+            user = User.objects.get(groups__name = settings.BTDS_GROUP_USER, id = request.POST.get("id_user", ""))
+            for l in Link.objects.filter(user = user):
+                l.closed = True
+                l.save()
+            user.is_active = False
+            user.save()
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        if request.user.groups.filter(name = 'Admin') or request.user.is_superuser:
-            if 'closeUser' in request.POST:
-                user = User.objects.get(groups__name = 'Layer 8', id = request.POST.get("id_user", ""))
-                for l in Link.objects.filter(user = user):
-                    l.closed = True
-                    l.save()
-                user.is_active = False
-                user.save()
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        if request.user.is_authenticated():
-            if 'deleteImage' in request.POST:
-                image = get_object_or_404(Image, id = request.POST.get("id_image", ""))
-                image.delete()
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     return redirect('btds_index')
 
 
@@ -268,9 +262,7 @@ def add(request):
     if 'addMeta' in request.POST:
         form = MetaAddForm(request.POST or None)
         if form.is_valid():
-            meta = form.save(commit = False)
-            meta.uuid = uuid4()
-            meta.save()
+            form.save()
     if 'addAuthor' in request.POST:
         form = AuthorAddForm(request.POST or None)
         if form.is_valid():

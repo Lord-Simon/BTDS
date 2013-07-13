@@ -1,4 +1,3 @@
-#from django import forms
 from django.forms import ModelForm
 from btds.models import *
 
@@ -77,6 +76,12 @@ class VolumeAddForm(ModelForm):
 
 
 class MetaAddForm(ModelForm):
+    class Meta:
+        model = Meta
+        exclude = ('modified', 'created', 'epubgen', 'pdfgen', 'mobigen', 'uuid')
+
+
+class MetaEditForm(ModelForm):
     class Meta:
         model = Meta
         exclude = ('modified', 'created', 'epubgen', 'pdfgen', 'mobigen', 'uuid')

@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from uuid import uuid4
-import itertools
+import itertools, string
 
 PUBLISHER_TYPE = (
     ('m', 'MediaWiki'),
@@ -17,12 +17,18 @@ class Author(models.Model):
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        ordering = ['name']
+
 
 class Illustrator(models.Model):
     name = models.CharField(max_length = 255, unique = True)
 
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        ordering = ['name']
 
 
 class Translator(models.Model):
@@ -32,6 +38,9 @@ class Translator(models.Model):
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        ordering = ['name']
+
 
 class Editor(models.Model):
     name = models.CharField(max_length = 255, unique = True)
@@ -40,6 +49,9 @@ class Editor(models.Model):
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        ordering = ['name']
+
 
 class Language(models.Model):
     name = models.CharField(max_length = 255)
@@ -47,6 +59,9 @@ class Language(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        ordering = ['name']
 
 
 class Publisher(models.Model):
@@ -57,6 +72,9 @@ class Publisher(models.Model):
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        ordering = ['name']
+
 
 class Genre(models.Model):
     name = models.CharField(max_length = 255, unique = True)
@@ -64,12 +82,18 @@ class Genre(models.Model):
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        ordering = ['name']
+
 
 class Format(models.Model):
     name = models.CharField(max_length = 5, unique = True)
 
     def __unicode__(self):
         return self.name
+
+    class Meta:
+        ordering = ['name']
 
 
 class Novel(models.Model):
@@ -88,10 +112,10 @@ class Novel(models.Model):
 
 class Volume(models.Model):
     name = models.CharField(max_length = 255, blank = True)
-    number = models.PositiveSmallIntegerField(blank = True, null = True)
+    number = models.DecimalField(blank = True, null = True, decimal_places=1, max_digits=10)
     created = models.DateTimeField(auto_now_add = True)
     modified = models.DateTimeField(auto_now = True)
-    novel = models.ForeignKey(Novel)
+    novel = models.ForeignKey(Novel, related_name="volume")
     synopsis = models.TextField(blank = True)
     isbn = models.CharField(max_length = 17, blank = True)
     year = models.PositiveSmallIntegerField(max_length = 4, blank = True, null = True)
@@ -100,16 +124,22 @@ class Volume(models.Model):
         return reverse('btds.views.volume', None, [str(self.id)])
 
     def get_translator(self):
-        return sorted(set([x for t in [m.translator.all() for m in self.meta_set.all()] for x in t]))
+        return sorted(set([x for t in [m.translator.all() for m in self.meta.all()] for x in t]))
 
     def get_editor(self):
-        return sorted(set([x for t in [m.editor.all() for m in self.meta_set.all()] for x in t]))
+        return sorted(set([x for t in [m.editor.all() for m in self.meta.all()] for x in t]))
 
     def get_publisher(self):
-        return [m.publisher for m in self.meta_set.all()]
+        return [m.publisher for m in self.meta.all()]
 
     def get_link(self):
-        return list(itertools.chain.from_iterable([m.link_set.all() for m in self.meta_set.all()]))
+        return list(itertools.chain.from_iterable([m.link.all() for m in self.meta.all()]))
+
+    def get_link_visible(self):
+        return list(itertools.chain.from_iterable([m.link.filter(visible=True, closed=False) for m in self.meta.all()]))
+
+    def get_links_pending(self):
+        return list(itertools.chain.from_iterable([m.link.filter(visible=False, closed=False) for m in self.meta.all()]))
 
     def get_cover(self):
         return self.image_set.filter(cover = True)[:1].get().image
@@ -121,9 +151,7 @@ class Volume(models.Model):
         return self.novel.genre.all()
 
     def get_link_language(self):
-        return sorted(set(
-            [x.language for l in [m.link_set.filter(visible = True, closed = False) for m in self.meta_set.all()] for x
-             in l]))
+        return sorted(set([x.language for l in [m.link.filter(visible = True, closed = False) for m in self.meta.all()] for x in l]))
 
     def __unicode__(self):
         volume_name = self.novel.name
@@ -135,19 +163,27 @@ class Volume(models.Model):
 
 
 class Meta(models.Model):
-    volume = models.ForeignKey(Volume)
-    language = models.ForeignKey(Language)
-    publisher = models.ForeignKey(Publisher)
+    volume = models.ForeignKey(Volume, related_name="meta")
+    language = models.ForeignKey(Language, related_name="meta")
+    publisher = models.ForeignKey(Publisher, related_name="meta")
     url = models.URLField(max_length = 500, blank = True, null = True)
     chapter_url = models.TextField(blank = True, null = True)
-    translator = models.ManyToManyField(Translator, blank = True, null = True)
-    editor = models.ManyToManyField(Editor, blank = True, null = True)
+    translator = models.ManyToManyField(Translator, blank = True, null = True, related_name="meta")
+    editor = models.ManyToManyField(Editor, blank = True, null = True, related_name="meta")
     epubgen = models.BooleanField(default = False)
     pdfgen = models.BooleanField(default = False)
     mobigen = models.BooleanField(default = False)
-    uuid = models.SlugField(max_length = 36, unique = True, default = uuid4())
+    def generateUUID():
+        return str(uuid4())
+    uuid = models.SlugField(max_length = 36, unique = True, editable=False, default=generateUUID())
     created = models.DateTimeField(auto_now_add = True)
     modified = models.DateTimeField(auto_now = True)
+
+    def save(self, *args, **kwargs):
+        if self.pk is not None:
+            self.uuid = uuid4()
+            super(Meta, self).save(*args, **kwargs)
+        super(Meta, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.publisher.name + ' - ' + self.volume.novel.name + ' - ' + str(
@@ -155,10 +191,10 @@ class Meta(models.Model):
 
 
 class Link(models.Model):
-    meta = models.ForeignKey(Meta)
-    language = models.ForeignKey(Language)
+    meta = models.ForeignKey(Meta, related_name="link")
+    language = models.ForeignKey(Language, related_name="link")
     link = models.URLField(max_length = 500)
-    file_format = models.ForeignKey(Format)
+    file_format = models.ForeignKey(Format, related_name="link")
     user = models.ForeignKey(User)
     dlcount = models.BigIntegerField(default = 0)
     visible = models.BooleanField(default = False)
@@ -179,6 +215,8 @@ class Image(models.Model):
     volume = models.ForeignKey(Volume)
 
     def upload_to_path(instance, filename):
+        valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+        filename = ''.join(c for c in filename if c in valid_chars)
         return 'btds/images/%s/%s' % (instance.volume.id, filename)
 
     image = models.ImageField(upload_to = upload_to_path)

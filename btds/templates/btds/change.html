@@ -6,10 +6,11 @@
                 <thead>
                 <tr>
                     <th>Entry</th>
-                    {% if edit == "image" %}
-                        <th>Cover</th>
-                        <th>File Name</th>
-                        <th>Opt. Name</th>{% endif %}
+                {% if edit == "image" %}
+                    <th>Cover</th>
+                    <th>File Name</th>
+                    <th>Opt. Name</th>
+                {% endif %}
                 </tr>
                 </thead>
                 <tbody>
@@ -19,7 +20,8 @@
                             <td>{{ change.volume }}</td>{% endif %}
                         {% if edit == "image" %}
                             <td>
-                            {% if change.cover %}<i class="icon-ok"></i>{% else %}<i class="icon-remove"></i>{% endif %}
+                                {% if change.cover %}<i class="icon-ok"></i>
+                                    {% else %}<i class="icon-remove"></i>{% endif %}
                             </td>{% endif %}
                         <td><a href="{% url "btds_change_entry" edit change.id %}">{{ change }}</a></td>
                         {% if edit == "image" %}

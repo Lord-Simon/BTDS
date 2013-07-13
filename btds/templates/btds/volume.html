@@ -6,13 +6,6 @@
         {% block js %}
             <script src="{% static 'btds/js/btds.js' %}"></script>
         {% endblock %}
-        {% block hjs %}
-            <script>
-                function uldc(lid) {
-                    $.post("{% url "btds_edit" %}", { linkDownloadCount: "True", id_link: lid });
-                }
-            </script>
-        {% endblock %}
         <div class="container">
             {% if user.is_authenticated %}
                 {% if volume.get_images %}
@@ -31,6 +24,9 @@
                                     <div class="carousel-caption">
                                         <h4 class="text-center">{{ img }}</h4>
                                         <br>
+
+                                        <p><a class="btn btn-info btn-block"
+                                              href="{% url "btds_change_entry" "image" img.id %}">Edit</a></p><br>
                                         {% if not img.cover %}
                                             <p>
                                             <form action="{% url "btds_edit" %}" method="post">{% csrf_token %}
@@ -75,16 +71,16 @@
                 <a href="#addVolumeMeta" role="button" data-toggle="modal" class="btn btn-inverse"><i
                         class="icon-plus icon-white"></i> <b>Add Meta</b></a>&nbsp;
                 <a href="#addCoverImage" class="btn btn-inverse" role="button" data-toggle="modal"><i
-                        class="icon-plus icon-white"></i> Add Image</a>&nbsp;
+                        class="icon-plus icon-white"></i> Add Image</a>{% if volume.meta.all %}&nbsp;
                 <a href="#addVolumeLink" class="btn btn-inverse" role="button" data-toggle="modal"><i
-                        class="icon-plus icon-white"></i> Add Link</a>{% endif %}</h1>
+                        class="icon-plus icon-white"></i> Add Link</a>{% endif %}{% endif %}</h1>
 
             <p><strong>Series:</strong> <a href="{{ volume.novel.get_absolute_url }}">{{ volume.novel.name }}</a></p>
             {% if volume.name %}
                 <p><strong>Title:</strong> {{ volume.name }}</p>
             {% endif %}
             {% if volume.number %}
-                <p><strong>Volume:</strong> {{ volume.number }}</p>
+                <p><strong>Volume:</strong> {{ volume.number|floatformat }}</p>
             {% endif %}
             {% if volume.novel.author.name %}
                 <p><strong>Author:</strong> {{ volume.novel.author.name }}</p>
@@ -100,18 +96,19 @@
             {% endif %}
             {% if volume.get_translator %}
                 <p><strong>Translator{{ volume.get_translator|pluralize }}:</strong>{% for t in volume.get_translator %}
-                    <a href="{{ t.link }}">{{ t.name }}</a>{% endfor %}</p>
+                    <a href="{{ t.link }}">{{ t.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
             {% endif %}
             {% if volume.get_editor %}
-                <p><strong>Editor{{ volume.get_editor|pluralize }}:</strong>{% for e in volume.get_editor %}
-                    <a href="{{ e.link }}">{{ e.name }}</a>{% endfor %}</p>
+                <p><strong>Editor{{ volume.get_editor|pluralize }}:</strong>
+                    {% for e in volume.get_editor %}<a href="{{ e.link }}">{{ e.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
             {% endif %}
             {% if volume.get_publisher %}
-                <p><strong>Source:</strong> {% for m in volume.meta_set.all %}
+                <p><strong>Source{{ volume.meta.all|pluralize }}:</strong> {% for m in volume.meta.all %}
                     <a {% if user.is_authenticated %}href="#editMeta-{{ m.id }}" role="button" data-toggle="modal"
                        class="btn btn-inverse"
-                       {% else %}href="{% if m.url %}{{ m.url }}{% else %}{{ m.publisher.link }}{% endif %}"{% endif %}>{% if user.is_authenticated %}
-                        <i class="icon-edit icon-white"></i> {% endif %}{{ m.publisher.name }}</a>{% endfor %}</p>
+                       {% else %}href="{% if m.url %}{{ m.url }}{% else %}{{ m.publisher.link }}{% endif %}"{% endif %}>
+                        {% if user.is_authenticated %}
+                            <i class="icon-edit icon-white"></i> {% endif %}{{ m.publisher.name }}</a>{% endfor %}</p>
             {% endif %}
             {% if volume.synopsis %}
                 <p class="span4 pull-left" style="margin-left: 0px !important;">
@@ -119,10 +116,14 @@
             {% endif %}
             <br/>
             <br/>
-            {% if volume.meta_set.all %}
+            {% if volume.meta.all %}
                 <div class="btn-group" data-toggle="buttons-radio">
                     {% for lang in volume.get_link_language %}
-                        <button type="button" class="btn" id="{{ lang.iso }}">{{ lang.name }}</button>{% endfor %}
+                        <button type="button" class="btn" id="{{ lang.iso }}">{{ lang.name }}</button>
+                    {% endfor %}
+                    {% if volume.get_links_pending and is_mortal or pul %}
+                        <button type="button" class="btn btn-warning" id="pending">Pending</button>
+                    {% endif %}
                 </div>
                 <br/>
                 <br/>
@@ -130,15 +131,30 @@
                     {% for lang in volume.get_link_language %}
                         <div id="{{ lang.iso }}">
                             <ul>
-                                {% for link in volume.get_link %}
-                                    {% if link.visible %}{% if not link.closed %}{% if link.language.iso == lang.iso %}
-                                        <li><a href="{{ link.link }}" onclick="uldc({{ link.id }})"
-                                               class="btn"><b>{{ link.file_format }}</b> by {{ link.user }}
-                                            | {{ link.modified }}</a></li>{% endif %}{% endif %}{% endif %}
+                                {% for link in volume.get_link_visible %}
+                                    {% if link.language.iso == lang.iso %}
+                                        <li><a href="{{ link.link }}"
+                                               class="btn"><b>{{ link.file_format }} by {{ link.user }}</b>
+                                            | {{ link.modified }}</a></li>{% endif %}
                                 {% endfor %}
                             </ul>
                         </div>
                     {% endfor %}
+                    {% if volume.get_links_pending and user.is_authenticated %}
+                        <div id="pending">
+                            <ul>
+                                {% if is_mortal or is_god %}
+                                {% for link in volume.get_links_pending %}
+                                        <li><a href="{% url "btds_acp_user_pending" link.user.id %}" class="btn"><b>{{ link.file_format }} by {{ link.user }}</b> | {{ link.modified }}</a></li>
+                                {% endfor %}
+                                {% else %}
+                                {% for link in pul %}
+                                        <li><a href="{% url "btds_ucp_edit_meta" link.user.id %}" class="btn"><b>{{ link.file_format }} by {{ link.user }}</b> | {{ link.modified }}</a></li>
+                                {% endfor %}
+                                {% endif %}
+                            </ul>
+                        </div>
+                    {% endif %}
                 </div>
             {% endif %}
         </div>
@@ -156,12 +172,18 @@
                         <div class="modal-body">
                             <form class="form-horizontal" action="{% url "btds_edit" %}" method="post">{% csrf_token %}
                                 {% for field in MEF %}
-                                    <div class="control-group">
+                                    <div class="control-group{% if field.name == "volume" %} hidden{% endif %}">
                                         <label class="control-label" for="id_{{ field.name }}">{{ field.label }}</label>
 
                                         <div class="controls">
-                                            {{ field.errors }}
-                                            {{ field }}
+                                            {% if field.name == "volume" %}
+                                                <select id="id_volume" name="volume">
+                                                    <option selected="selected" value="{{ volume.id }}">{{ volume }}</option>
+                                                </select>
+                                            {% else %}
+                                                {{ field.errors }}
+                                                {{ field }}
+                                            {% endif %}
                                         </div>
                                     </div>
                                 {% endfor %}
@@ -242,7 +264,7 @@
                     </form>
                 </div>
             </div>
-
+{% if volume.meta.all %}
             <div id="addVolumeLink" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
                  aria-hidden="true">
                 <div class="modal-header">
@@ -268,7 +290,7 @@
                     </form>
                 </div>
             </div>
-
+{% endif %}
             <!-- editVolume Part -->
 
             <div id="editVolume" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"

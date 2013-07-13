@@ -1,4 +1,5 @@
 from btds.forms import *
+from django.conf import settings
 
 
 def AddForms(request):
@@ -16,17 +17,16 @@ def AddForms(request):
     FAF = FormatAddForm()
     IMGAF = ImageAddForm()
     return {
-    'btdsForms':{'Novel':NAF, 'Volume':VAF, 'Meta':MAF, 'Link':LAF, 'Author':AAF, 'Illustrator':IAF, 'Translator':TAF,
-                 'Editor':EAF, 'Language':LANGAF, 'Publisher':PAF, 'Genre':GAF, 'Format':FAF, 'Image':IMGAF}}
-    #return {'NAF':NAF,'VAF':VAF,'MAF':MAF,'LAF':LAF,'AAF':AAF,'IAF':IAF,'TAF':TAF,'EAF':EAF,'LANGAF':LANGAF,'PAF':PAF,'GAF':GAF,'FAF':FAF,'IMGAF':IMGAF}
-
+        'btdsForms':{'Novel':NAF, 'Volume':VAF, 'Meta':MAF, 'Link':LAF, 'Author':AAF, 'Illustrator':IAF,
+                     'Translator':TAF,
+                     'Editor':EAF, 'Language':LANGAF, 'Publisher':PAF, 'Genre':GAF, 'Format':FAF, 'Image':IMGAF}}
 
 def BTDSAC(request):
     if request.user.is_superuser:
         is_god = True
     else:
         is_god = False
-    if request.user.groups.filter(name = 'Admin'):
+    if request.user.groups.filter(name = settings.BTDS_GROUP_ADMIN):
         is_mortal = True
     else:
         is_mortal = False
