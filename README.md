@@ -20,4 +20,4 @@ In your `settings.py`:
         ...
     )
 
-Also, don't forget to create 'Admin' and 'Layer 8' groups.
+Set 'BTDS_GROUP_ADMIN' to your admin group name and 'BTDS_GROUP_USER' to the normal users.
